@@ -1,4 +1,5 @@
 import * as fs from "fs/promises";
+import path from "path";
 
 export type Kanji = {
   strokes: number;
@@ -12,7 +13,8 @@ export type Kanji = {
 };
 
 const getKanjiList = async () => {
-  const kanji = JSON.parse(await fs.readFile(`data/kanji.json`, "utf-8"));
+  const dir = path.join(process.cwd(), "data");
+  const kanji = JSON.parse(await fs.readFile(`${dir}/kanji.json`, "utf-8"));
   return kanji as Record<string, Kanji>;
 };
 

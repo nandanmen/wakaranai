@@ -10,7 +10,7 @@ const JP_DELIMITER = `.`;
 export const Quiz = ({ list }: { list: [string, Kanji][] }) => {
   const [current, setCurrent] = React.useState(0);
   return (
-    <div>
+    <div className="text-white">
       <ProgressBar value={(current + 1) / list.length} steps={list.length} />
       <KanjiForm
         kanji={list[current]}
