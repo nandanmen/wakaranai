@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import cn from "classnames";
 import { CheckIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { Kanji } from "@/lib/kanji";
@@ -78,13 +77,15 @@ const KanjiForm = ({
   kanji: [string, Kanji];
   onSubmit: (result: Result) => void;
 }) => {
-  const [char, data] = kanji;
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState<
     "skipped" | "answered" | null
   >(null);
 
   const result = React.useMemo((): Result | null => {
+    if (!Array.isArray(kanji)) return null;
+    const [, data] = kanji;
+
     if (!submitted) return null;
     if (submitted === "skipped") {
       return {
@@ -146,7 +147,7 @@ const KanjiForm = ({
       reading: readingAnswer,
       meaning: meaningAnswer,
     };
-  }, [submitted, data.meanings, data.readings_kun, data.readings_on]);
+  }, [submitted, kanji]);
 
   const handleSubmit = React.useCallback(() => {
     setSubmitted(null);
@@ -164,6 +165,10 @@ const KanjiForm = ({
   React.useEffect(() => {
     const handleEnter = (evt: KeyboardEvent) => {
       if (evt.key === "Enter") {
+        if (submitted) {
+          handleSubmit();
+          return;
+        }
         if (evt.metaKey) {
           if (!submitted) {
             const inputs = formRef.current?.elements;
@@ -178,8 +183,6 @@ const KanjiForm = ({
             } else {
               setSubmitted("answered");
             }
-          } else {
-            handleSubmit();
           }
           return;
         }
@@ -207,6 +210,9 @@ const KanjiForm = ({
   }, [result, submitted, handleSubmit]);
 
   console.log(result);
+
+  if (!Array.isArray(kanji)) return null;
+  const [char, data] = kanji;
 
   return (
     <>
