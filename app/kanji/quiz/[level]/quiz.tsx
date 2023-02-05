@@ -69,6 +69,22 @@ const isJapaneseReadingCorrect = (reading: string, input: string) => {
   return reading === input;
 };
 
+const getInputAnswer = (
+  input: HTMLInputElement,
+  isCorrect: (value: string) => boolean
+): Answer => {
+  if (input.value === "") {
+    return {
+      type: "skipped",
+      value: null,
+    };
+  }
+  return {
+    type: isCorrect(input.value) ? "correct" : "incorrect",
+    value: input.value,
+  };
+};
+
 const KanjiForm = ({
   kanji,
   onSubmit,
@@ -89,45 +105,20 @@ const KanjiForm = ({
     const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
     const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
 
-    let readingAnswer: Answer;
-    let meaningAnswer: Answer;
-
-    const readingSkipped = readingInput.value === "";
-    if (readingSkipped) {
-      readingAnswer = {
-        type: "skipped",
-        value: null,
-      };
-    } else {
+    const readingAnswer = getInputAnswer(readingInput, (value) => {
       const kunReadingCorrect = data.readings_kun.some((reading) =>
-        isJapaneseReadingCorrect(reading, readingInput.value)
+        isJapaneseReadingCorrect(reading, value)
       );
       const onReadingCorrect = data.readings_on.some((reading) =>
-        isJapaneseReadingCorrect(reading, readingInput.value)
+        isJapaneseReadingCorrect(reading, value)
       );
-      const readingCorrect = kunReadingCorrect || onReadingCorrect;
-      readingAnswer = {
-        type: readingCorrect ? "correct" : "incorrect",
-        value: readingInput.value,
-      };
-    }
-
-    const meaningSkipped = meaningInput.value === "";
-    if (meaningSkipped) {
-      meaningAnswer = {
-        type: "skipped",
-        value: null,
-      };
-    } else {
-      const meaningCorrect = data.meanings.some(
-        (meaning) => meaning.toLowerCase() === meaningInput.value.toLowerCase()
+      return kunReadingCorrect || onReadingCorrect;
+    });
+    const meaningAnswer = getInputAnswer(meaningInput, (value) => {
+      return data.meanings.some(
+        (meaning) => meaning.toLowerCase() === value.toLowerCase()
       );
-      meaningAnswer = {
-        type: meaningCorrect ? "correct" : "incorrect",
-        value: meaningInput.value,
-      };
-    }
-
+    });
     return {
       reading: readingAnswer,
       meaning: meaningAnswer,
