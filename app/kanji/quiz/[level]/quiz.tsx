@@ -78,27 +78,13 @@ const KanjiForm = ({
   onSubmit: (result: Result) => void;
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
-  const [submitted, setSubmitted] = React.useState<
-    "skipped" | "answered" | null
-  >(null);
+  const [submitted, setSubmitted] = React.useState(false);
 
   const result = React.useMemo((): Result | null => {
     if (!Array.isArray(kanji)) return null;
     const [, data] = kanji;
 
     if (!submitted) return null;
-    if (submitted === "skipped") {
-      return {
-        reading: {
-          type: "skipped",
-          value: null,
-        },
-        meaning: {
-          type: "skipped",
-          value: null,
-        },
-      };
-    }
     const form = formRef.current;
     if (!form) return null;
     const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
@@ -150,7 +136,7 @@ const KanjiForm = ({
   }, [submitted, kanji]);
 
   const handleSubmit = React.useCallback(() => {
-    setSubmitted(null);
+    setSubmitted(false);
     const form = formRef.current;
     if (form) {
       form.reset();
@@ -171,18 +157,7 @@ const KanjiForm = ({
         }
         if (evt.metaKey) {
           if (!submitted) {
-            const inputs = formRef.current?.elements;
-            const readingInput = inputs?.namedItem(
-              "reading"
-            ) as HTMLInputElement;
-            const meaningInput = inputs?.namedItem(
-              "meaning"
-            ) as HTMLInputElement;
-            if (readingInput.value === "" && meaningInput.value === "") {
-              setSubmitted("skipped");
-            } else {
-              setSubmitted("answered");
-            }
+            setSubmitted(true);
           }
           return;
         }
@@ -200,7 +175,7 @@ const KanjiForm = ({
           document.activeElement ===
           formRef.current?.elements.namedItem("meaning")
         ) {
-          setSubmitted("answered");
+          setSubmitted(true);
           return;
         }
       }
@@ -237,7 +212,7 @@ const KanjiForm = ({
             onSubmit={(evt) => {
               evt.preventDefault();
               if (!submitted) {
-                setSubmitted("answered");
+                setSubmitted(true);
               } else {
                 handleSubmit();
               }
@@ -341,13 +316,13 @@ const KanjiForm = ({
             if (submitted) {
               handleSubmit();
             } else {
-              setSubmitted("skipped");
+              setSubmitted(true);
             }
           }}
         >
           <motion.span
             layout
-            key={submitted}
+            key={String(submitted)}
             animate={{ opacity: 1 }}
             initial={{ opacity: 0 }}
             transition={{ delay: 0.3 }}
