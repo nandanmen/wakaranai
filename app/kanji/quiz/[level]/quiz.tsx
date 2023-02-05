@@ -104,7 +104,6 @@ const KanjiForm = ({
     if (!form) return null;
     const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
     const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
-
     const readingAnswer = getInputAnswer(readingInput, (value) => {
       const kunReadingCorrect = data.readings_kun.some((reading) =>
         isJapaneseReadingCorrect(reading, value)
