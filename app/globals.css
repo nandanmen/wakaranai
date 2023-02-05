@@ -48,6 +48,13 @@ a {
 }
 
 .grid-background {
-  background: url("/grid.svg");
+  background: url("/grid-light.svg");
   background-size: 40px 40px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .grid-background {
+    background: url("/grid.svg");
+    background-size: 40px 40px;
+  }
 }
