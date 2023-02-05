@@ -1,6 +1,8 @@
 import { getKanjiByLevelAndCount } from "@/lib/kanji";
 import { Quiz } from "./quiz";
 
+export const dynamic = "force-dynamic";
+
 export default async function QuizPage({
   params,
 }: {
