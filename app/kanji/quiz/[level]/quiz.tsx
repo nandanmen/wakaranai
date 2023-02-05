@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { CheckIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { Kanji } from "@/lib/kanji";
 
@@ -184,8 +183,10 @@ const KanjiForm = ({
     return () => document.removeEventListener("keydown", handleEnter);
   }, [result, submitted, handleSubmit]);
 
-  console.log(result);
-
+  /**
+   * Not entirely sure why this would never be an array, but I ran into "not an
+   * iterable" errors in build time without this check.
+   */
   if (!Array.isArray(kanji)) return null;
   const [char, data] = kanji;
 
@@ -337,20 +338,25 @@ const KanjiForm = ({
 
 const Icon = ({ type }: { type?: Answer["type"] }) => {
   if (!type) return null;
-  const iconMap: Record<Answer["type"], typeof CheckIcon> = {
-    correct: CheckIcon,
-    incorrect: Cross1Icon,
-    skipped: MinusIcon,
+  const iconMap: Record<Answer["type"], string> = {
+    correct: "M 4 8 L 7 10.8 L 12 4",
+    incorrect: "M 3 3 L 12 12 M 3 12 L 12 3",
+    skipped: "M 2.8 7.5 H 12.2",
   };
-  const _Icon = iconMap[type];
   return (
-    <motion.div
-      animate={{ x: 0, opacity: 1 }}
-      initial={{ x: 16, opacity: 0 }}
-      transition={{ type: "spring", damping: 20 }}
-      className="absolute bottom-3 right-2"
-    >
-      <_Icon width="24" height="24" />
+    <motion.div className="absolute bottom-3 right-2">
+      <svg viewBox="0 0 15 15" width="24" height="24">
+        <motion.path
+          d={iconMap[type]}
+          fill="none"
+          stroke="white"
+          strokeLinecap="round"
+          strokeWidth="1.2"
+          animate={{ pathLength: 1 }}
+          initial={{ pathLength: 0 }}
+          transition={{ type: "spring", damping: 20 }}
+        />
+      </svg>
     </motion.div>
   );
 };
