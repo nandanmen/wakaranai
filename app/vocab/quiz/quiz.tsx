@@ -1,74 +1,58 @@
 "use client";
 
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 
 import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
-import { Kanji } from "@/lib/kanji";
+import { Word } from "@/lib/words";
 
-const JP_DELIMITER = `.`;
-
-export const Quiz = ({ list }: { list: [string, Kanji][] }) => {
+export const Quiz = ({ list }: { list: Word[] }) => {
   const [current, setCurrent] = React.useState(0);
   return (
     <div>
-      <ProgressBar value={(current + 1) / list.length} steps={list.length} />
-      <KanjiForm
-        kanji={list[current]}
-        onSubmit={() => setCurrent(current + 1)}
-      />
+      <LayoutGroup>
+        <ProgressBar value={(current + 1) / list.length} steps={list.length} />
+        <QuizForm
+          word={list[current]}
+          onSubmit={() => setCurrent(current + 1)}
+        />
+      </LayoutGroup>
     </div>
   );
 };
 
-const isJapaneseReadingCorrect = (reading: string, input: string) => {
-  if (reading.includes(JP_DELIMITER)) {
-    return reading.split(JP_DELIMITER)[0] === input;
-  }
-  return reading === input;
-};
-
-const KanjiForm = ({
-  kanji,
+const QuizForm = ({
+  word,
   onSubmit,
 }: {
-  kanji: [string, Kanji];
+  word: Word;
   onSubmit: (result: Result) => void;
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
   const result = React.useMemo((): Result | null => {
-    if (!Array.isArray(kanji)) return null;
-    const [, data] = kanji;
-
     if (!submitted) return null;
     const form = formRef.current;
     if (!form) return null;
     const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
     const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
     const readingAnswer = getInputAnswer(readingInput, (value) => {
-      const kunReadingCorrect = data.readings_kun.some((reading) =>
-        isJapaneseReadingCorrect(reading, value)
-      );
-      const onReadingCorrect = data.readings_on.some((reading) =>
-        isJapaneseReadingCorrect(reading, value)
-      );
-      return kunReadingCorrect || onReadingCorrect;
+      return word.furigana.length > 0 ? word.furigana === value : true;
     });
     const meaningAnswer = getInputAnswer(meaningInput, (value) => {
-      return data.meanings.some(
-        (meaning) => meaning.toLowerCase() === value.toLowerCase()
-      );
+      return word.meaning
+        .split(", ")
+        .some((meaning) => meaning.toLowerCase() === value.toLowerCase());
     });
     return {
       reading: readingAnswer,
       meaning: meaningAnswer,
     };
-  }, [submitted, kanji]);
+  }, [submitted, word]);
 
   const handleSubmit = React.useCallback(() => {
     setSubmitted(false);
@@ -119,33 +103,36 @@ const KanjiForm = ({
     return () => document.removeEventListener("keydown", handleEnter);
   }, [result, submitted, handleSubmit]);
 
-  /**
-   * Not entirely sure why this would never be an array, but I ran into "not an
-   * iterable" errors in build time without this check.
-   */
-  if (!Array.isArray(kanji)) return null;
-  const [char, data] = kanji;
-
+  const hasFurigana = word.furigana.length > 0;
   return (
     <>
-      <div className="flex border rounded-lg dark:border-neutral-800 overflow-hidden my-6 border-neutral-200 shadow-lg dark:shadow-none">
-        <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative">
+      <motion.div
+        layout
+        className="border rounded-lg dark:border-neutral-800 overflow-hidden my-6 border-neutral-200 shadow-lg dark:shadow-none w-[900px]"
+      >
+        <motion.div
+          layout
+          className="text-[8rem] text-center font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 overflow-hidden relative -mt-12 pt-28"
+        >
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
-              key={char}
-              initial={{ x: 400 }}
-              animate={{ x: 0 }}
-              exit={{ x: -400 }}
+              key={word.word}
+              initial={{ y: -400 }}
+              animate={{ y: 0 }}
+              exit={{ y: 400 }}
               transition={{ type: "spring", damping: 20 }}
             >
-              {char}
+              {word.word}
             </motion.h1>
           </AnimatePresence>
-        </div>
-        <div className="p-12 dark:bg-black bg-white flex items-center">
+        </motion.div>
+        <motion.div
+          layout
+          className="p-12 dark:bg-black bg-white flex items-center"
+        >
           <form
             ref={formRef}
-            className="w-[400px] text-lg"
+            className="w-full text-lg flex gap-12"
             onSubmit={(evt) => {
               evt.preventDefault();
               if (!submitted) {
@@ -155,40 +142,29 @@ const KanjiForm = ({
               }
             }}
           >
-            <div className="mb-8 relative">
-              <FormInput label="Reading" type={result?.reading.type} />
-              {submitted && (
-                <motion.div className="mt-2" animate="show" initial="hidden">
-                  <motion.p
-                    variants={{
-                      show: { y: 0, opacity: 1 },
-                      hidden: { y: -16, opacity: 0 },
-                    }}
-                    transition={{ type: "spring", damping: 20, delay: 0.3 }}
-                    className="flex"
-                  >
-                    <span className="w-[60px] text-sm mr-2 font-mono text-neutral-500 translate-y-[2px]">
-                      Kunyomi
-                    </span>{" "}
-                    {data.readings_kun.join(", ")}
-                  </motion.p>
-                  <motion.p
-                    variants={{
-                      show: { y: 0, opacity: 1 },
-                      hidden: { y: -16, opacity: 0 },
-                    }}
-                    transition={{ type: "spring", damping: 20, delay: 0.3 }}
-                    className="flex items-center"
-                  >
-                    <span className="w-[60px] text-sm mr-2 font-mono text-neutral-500">
-                      Onyomi
-                    </span>{" "}
-                    {data.readings_on.join(", ")}
-                  </motion.p>
+            <div className="relative flex-1">
+              <FormInput
+                label="Reading"
+                type={result?.reading.type}
+                disabled={!hasFurigana}
+              />
+              {submitted && hasFurigana && (
+                <motion.div
+                  className="text-sm mt-3"
+                  animate="show"
+                  initial="hidden"
+                  variants={{
+                    show: { y: 0, opacity: 1 },
+                    hidden: { y: -16, opacity: 0 },
+                  }}
+                  transition={{ type: "spring", damping: 20, delay: 0.3 }}
+                >
+                  <p className="font-mono text-neutral-500 mb-1">Reading</p>
+                  <p className="text-lg">{word.furigana}</p>
                 </motion.div>
               )}
             </div>
-            <div>
+            <div className="flex-1">
               <FormInput label="Meaning" type={result?.meaning.type} />
               {submitted && (
                 <motion.div
@@ -201,14 +177,14 @@ const KanjiForm = ({
                   }}
                   transition={{ type: "spring", damping: 20, delay: 0.3 }}
                 >
-                  <p className="font-mono text-neutral-500 mb-1">Meanings</p>
-                  <p>{data.meanings.join(", ")}</p>
+                  <p className="font-mono text-neutral-500 mb-1">Meaning</p>
+                  <p>{word.meaning}</p>
                 </motion.div>
               )}
             </div>
           </form>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       <div className="flex justify-end">
         <motion.button
           layout
