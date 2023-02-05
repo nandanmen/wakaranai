@@ -32,7 +32,10 @@ export async function getKanji(kanji: string): Promise<any> {
   return kanjiData;
 }
 
-const sampleItemsFromArray = <T>(array: T[], count: number | "all"): T[] => {
+export const sampleItemsFromArray = <T>(
+  array: T[],
+  count: number | "all"
+): T[] => {
   const shuffled = array.sort(() => 0.5 - Math.random());
   if (count === "all") return shuffled;
   return shuffled.slice(0, count);

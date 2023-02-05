@@ -1,4 +1,5 @@
 import * as fs from "fs/promises";
+import { sampleItemsFromArray } from "./kanji";
 
 export type Word = {
   word: string;
@@ -30,6 +31,11 @@ const getWordList = async (level: keyof typeof cache): Promise<Word[]> => {
 export async function getWords(limit: number, from = 0): Promise<Word[]> {
   const words = await getWordList("n5");
   return words.slice(from, limit);
+}
+
+export async function getRandomWords(limit: number): Promise<Word[]> {
+  const words = await getWordList("n5");
+  return sampleItemsFromArray(words, limit);
 }
 
 export async function getWord(level: string, pos: number): Promise<any> {

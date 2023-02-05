@@ -1,4 +1,4 @@
-import { getWords } from "@/lib/words";
+import { getRandomWords } from "@/lib/words";
 import { Quiz } from "./quiz";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ export default async function QuizPage({
 }: {
   searchParams: { count?: string };
 }) {
-  const list = await getWords(validateCount(searchParams.count));
+  const list = await getRandomWords(validateCount(searchParams.count));
   return (
     <main className="mx-auto w-fit h-screen flex items-center justify-center">
       <Quiz list={list} />
@@ -17,6 +17,7 @@ export default async function QuizPage({
 }
 
 const DEFAULT_COUNT = 35;
+const MAX_COUNT = 100;
 
 const validateCount = (count?: string): number => {
   if (!count) return DEFAULT_COUNT;
@@ -24,5 +25,5 @@ const validateCount = (count?: string): number => {
   if (Number.isNaN(parsed)) {
     return DEFAULT_COUNT;
   }
-  return parsed;
+  return Math.min(parsed, MAX_COUNT);
 };
