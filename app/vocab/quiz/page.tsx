@@ -3,11 +3,7 @@ import { Quiz } from "./quiz";
 
 export const dynamic = "force-dynamic";
 
-export default async function QuizPage({
-  searchParams,
-}: {
-  searchParams: { count?: string };
-}) {
+export default async function QuizPage({ searchParams }: any) {
   const list = await getRandomWords(validateCount(searchParams.count));
   return (
     <main className="mx-auto w-fit h-screen flex items-center justify-center">

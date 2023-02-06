@@ -7,7 +7,7 @@ import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
-import { Phrase, Word } from "@/lib/words";
+import { Phrase } from "@/lib/words";
 
 export const Quiz = ({ list }: { list: Phrase[] }) => {
   const [current, setCurrent] = React.useState(0);
@@ -184,6 +184,7 @@ const QuizForm = ({
                   <p>
                     {phrase.meanings
                       .flatMap((meaning) => meaning.definitions)
+                      .slice(0, 5)
                       .join(", ")}
                   </p>
                 </motion.div>
