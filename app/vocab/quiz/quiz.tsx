@@ -31,7 +31,6 @@ const QuizForm = ({
   phrase: Phrase;
   onSubmit: (result: Result) => void;
 }) => {
-  console.log(phrase);
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
@@ -118,15 +117,15 @@ const QuizForm = ({
           className="text-[8rem] text-center font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 overflow-hidden relative -mt-12 pt-28"
         >
           <AnimatePresence mode="popLayout" initial={false}>
-            <motion.h1
+            <motion.div
               key={phrase.text}
               initial={{ y: -400 }}
               animate={{ y: 0 }}
               exit={{ y: 400 }}
               transition={{ type: "spring", damping: 20 }}
             >
-              {phrase.text}
-            </motion.h1>
+              <PhraseText phrase={phrase} showReading={submitted} />
+            </motion.div>
           </AnimatePresence>
         </motion.div>
         <motion.div
@@ -217,5 +216,36 @@ const QuizForm = ({
         </motion.button>
       </div>
     </>
+  );
+};
+
+const PhraseText = ({
+  phrase,
+  showReading = false,
+}: {
+  phrase: Phrase;
+  showReading?: boolean;
+}) => {
+  const { parts } = phrase;
+  return (
+    <h1>
+      {parts.map((part) => {
+        return (
+          <span key={part.text} className="relative">
+            {showReading && (
+              <motion.span
+                animate={{ y: 0, opacity: 1 }}
+                initial={{ y: 16, opacity: 0 }}
+                transition={{ type: "spring", damping: 20 }}
+                className="absolute -top-[1em] text-4xl w-full text-center"
+              >
+                {part.reading}
+              </motion.span>
+            )}
+            {part.text}
+          </span>
+        );
+      })}
+    </h1>
   );
 };
