@@ -7,16 +7,16 @@ import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
-import { Word } from "@/lib/words";
+import { Phrase, Word } from "@/lib/words";
 
-export const Quiz = ({ list }: { list: Word[] }) => {
+export const Quiz = ({ list }: { list: Phrase[] }) => {
   const [current, setCurrent] = React.useState(0);
   return (
     <div>
       <LayoutGroup>
         <ProgressBar value={(current + 1) / list.length} steps={list.length} />
         <QuizForm
-          word={list[current]}
+          phrase={list[current]}
           onSubmit={() => setCurrent(current + 1)}
         />
       </LayoutGroup>
@@ -25,12 +25,13 @@ export const Quiz = ({ list }: { list: Word[] }) => {
 };
 
 const QuizForm = ({
-  word,
+  phrase,
   onSubmit,
 }: {
-  word: Word;
+  phrase: Phrase;
   onSubmit: (result: Result) => void;
 }) => {
+  console.log(phrase);
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
@@ -41,18 +42,20 @@ const QuizForm = ({
     const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
     const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
     const readingAnswer = getInputAnswer(readingInput, (value) => {
-      return word.furigana.length > 0 ? word.furigana === value : true;
+      return phrase.reading ? phrase.reading === value : true;
     });
     const meaningAnswer = getInputAnswer(meaningInput, (value) => {
-      return word.meaning
-        .split(", ")
-        .some((meaning) => meaning.toLowerCase() === value.toLowerCase());
+      return phrase.meanings.some((meaning) =>
+        meaning.definitions.some(
+          (definition) => definition.toLowerCase() === value.toLowerCase()
+        )
+      );
     });
     return {
       reading: readingAnswer,
       meaning: meaningAnswer,
     };
-  }, [submitted, word]);
+  }, [submitted, phrase]);
 
   const handleSubmit = React.useCallback(() => {
     setSubmitted(false);
@@ -103,7 +106,7 @@ const QuizForm = ({
     return () => document.removeEventListener("keydown", handleEnter);
   }, [result, submitted, handleSubmit]);
 
-  const hasFurigana = word.furigana.length > 0;
+  const hasFurigana = typeof phrase.reading === "string";
   return (
     <>
       <motion.div
@@ -116,13 +119,13 @@ const QuizForm = ({
         >
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
-              key={word.word}
+              key={phrase.text}
               initial={{ y: -400 }}
               animate={{ y: 0 }}
               exit={{ y: 400 }}
               transition={{ type: "spring", damping: 20 }}
             >
-              {word.word}
+              {phrase.text}
             </motion.h1>
           </AnimatePresence>
         </motion.div>
@@ -160,7 +163,7 @@ const QuizForm = ({
                   transition={{ type: "spring", damping: 20, delay: 0.3 }}
                 >
                   <p className="font-mono text-neutral-500 mb-1">Reading</p>
-                  <p className="text-lg">{word.furigana}</p>
+                  <p className="text-lg">{phrase.reading}</p>
                 </motion.div>
               )}
             </div>
@@ -178,7 +181,11 @@ const QuizForm = ({
                   transition={{ type: "spring", damping: 20, delay: 0.3 }}
                 >
                   <p className="font-mono text-neutral-500 mb-1">Meaning</p>
-                  <p>{word.meaning}</p>
+                  <p>
+                    {phrase.meanings
+                      .flatMap((meaning) => meaning.definitions)
+                      .join(", ")}
+                  </p>
                 </motion.div>
               )}
             </div>
