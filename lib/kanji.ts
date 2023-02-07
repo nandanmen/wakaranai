@@ -1,5 +1,5 @@
 import { KanjiDic } from "@/data/types";
-import { kanji } from "./supabase";
+import { client, kanji } from "./supabase";
 import { getRandomUnique } from "./utils";
 
 export type Kanji = {
@@ -12,11 +12,6 @@ export type Kanji = {
   };
   source: KanjiDic;
 };
-
-const levelToBounds = {
-  5: [1, 79],
-  4: [80, 245],
-} as Record<number, [number, number]>;
 
 export async function getKanjiByLevel(level = 5) {
   const response = await kanji().select().eq("jlpt", level);
@@ -31,9 +26,10 @@ export async function getKanjiByLevelAndCount(
   if (count === "all") {
     response = await kanji().select().eq("jlpt", level);
   } else {
-    const [min, max] = levelToBounds[level];
-    const ids = getRandomUnique(min, max, count);
-    response = await kanji().select().eq("jlpt", level).in("id", ids);
+    response = await client.rpc("get_random_kanji", {
+      level,
+      max_count: count,
+    });
   }
   return response.data as Kanji[];
 }

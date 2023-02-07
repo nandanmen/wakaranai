@@ -1,6 +1,5 @@
 import { JMdictWord } from "@/data/types";
-import { words } from "./supabase";
-import { getRandomUnique } from "./utils";
+import { client, words } from "./supabase";
 
 export type Word = {
   literal: string;
@@ -17,16 +16,15 @@ export type Word = {
   jmdict: JMdictWord;
 };
 
-const ID_MIN = 2;
-const ID_MAX = 648;
-
 export async function getWords(limit: number, from = 0): Promise<Word[]> {
   const response = await words().select().gte("id", from).limit(limit);
   return response.data as Word[];
 }
 
 export async function getRandomWords(limit: number): Promise<Word[]> {
-  const ids = getRandomUnique(ID_MIN, ID_MAX, limit);
-  const response = await words().select().in("id", ids);
+  const response = await client.rpc("get_random_words", {
+    level: 5,
+    max_count: limit,
+  });
   return response.data as Word[];
 }
