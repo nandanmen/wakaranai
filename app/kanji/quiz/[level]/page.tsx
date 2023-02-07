@@ -9,7 +9,7 @@ export default async function QuizPage({ params, searchParams }: any) {
     validateCount(searchParams.count)
   );
   return (
-    <main className="mx-auto w-fit h-screen flex items-center justify-center">
+    <main className="min-h-screen">
       <Quiz list={list} />
     </main>
   );

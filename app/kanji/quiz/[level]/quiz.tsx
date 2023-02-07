@@ -8,18 +8,37 @@ import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
 import { Kanji } from "@/lib/kanji";
+import { QuizResults } from "./results";
 
 const JP_DELIMITER = `.`;
 
 export const Quiz = ({ list }: { list: Kanji[] }) => {
   const [current, setCurrent] = React.useState(0);
+  const [results, setResults] = React.useState<Result[]>([]);
+  const [showResults, setShowResults] = React.useState(false);
   return (
-    <div>
-      <ProgressBar value={(current + 1) / list.length} steps={list.length} />
-      <KanjiForm
-        kanji={list[current]}
-        onSubmit={() => setCurrent(current + 1)}
-      />
+    <div className="w-fit mx-auto h-full">
+      {showResults ? (
+        <QuizResults results={results} list={list} />
+      ) : (
+        <div className="flex flex-col justify-center h-screen">
+          <ProgressBar
+            value={(current + 1) / list.length}
+            steps={list.length}
+          />
+          <KanjiForm
+            kanji={list[current]}
+            onSubmit={(result) => {
+              setResults([...results, result]);
+              if (current === list.length - 1) {
+                setShowResults(true);
+              } else {
+                setCurrent(current + 1);
+              }
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

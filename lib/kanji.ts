@@ -1,6 +1,5 @@
 import { KanjiDic } from "@/data/types";
 import { client, kanji } from "./supabase";
-import { getRandomUnique } from "./utils";
 
 export type Kanji = {
   literal: string;

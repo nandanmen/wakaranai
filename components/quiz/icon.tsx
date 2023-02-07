@@ -1,8 +1,15 @@
 import { motion } from "framer-motion";
+import { ComponentPropsWithoutRef } from "react";
 
 type Type = "correct" | "incorrect" | "skipped";
 
-export const Icon = ({ type }: { type?: Type }) => {
+export const Icon = ({
+  type,
+  ...props
+}: { type?: Type } & Omit<
+  ComponentPropsWithoutRef<typeof motion["path"]>,
+  "type"
+>) => {
   if (!type) return null;
   const iconMap: Record<Type, string> = {
     correct: "M 4 8 L 7 10.8 L 12 4",
@@ -21,6 +28,7 @@ export const Icon = ({ type }: { type?: Type }) => {
           animate={{ pathLength: 1 }}
           initial={{ pathLength: 0 }}
           transition={{ type: "spring", damping: 20 }}
+          {...props}
         />
       </svg>
     </motion.div>
