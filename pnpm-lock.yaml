@@ -7,6 +7,7 @@ specifiers:
   '@types/node': 18.11.18
   '@types/react': 18.0.27
   '@types/react-dom': 18.0.10
+  '@types/wanakana': ^4.0.3
   autoprefixer: ^10.4.13
   classnames: ^2.3.2
   encoding: ^0.1.13
@@ -19,6 +20,7 @@ specifiers:
   react-dom: 18.2.0
   tailwindcss: ^3.2.4
   typescript: 4.9.5
+  wanakana: ^5.0.2
 
 dependencies:
   '@next/font': 13.1.6
@@ -36,8 +38,10 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   typescript: 4.9.5
+  wanakana: 5.0.2
 
 devDependencies:
+  '@types/wanakana': 4.0.3
   autoprefixer: 10.4.13_postcss@8.4.21
   postcss: 8.4.21
   tailwindcss: 3.2.4_postcss@8.4.21
@@ -415,6 +419,10 @@ packages:
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
     dev: false
+
+  /@types/wanakana/4.0.3:
+    resolution: {integrity: sha512-AibaWzahBKizxmsAy8rEWSIqqcT0v9KZTS8S6zPLmStGBFdccYfXydhgwYOV+6lGqQ890MpA4h2MPET3uPk9Zg==}
+    dev: true
 
   /@typescript-eslint/parser/5.50.0_4vsywjlpuriuw3tl5oq6zy5a64:
     resolution: {integrity: sha512-KCcSyNaogUDftK2G9RXfQyOCt51uB5yqC6pkUYqhYh8Kgt+DwR5M0EwEAxGPy/+DH6hnmKeGsNhiZRQxjH71uQ==}
@@ -2683,6 +2691,11 @@ packages:
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
+
+  /wanakana/5.0.2:
+    resolution: {integrity: sha512-eYTezpLYXCr+gmVmgBBYQP7A7WJphvhyx1PkrHaMrnExTiMPrgTgFLSJgo75DnZf1Wy0lA2nukNVJg7Ptvx9zA==}
+    engines: {node: '>=12'}
+    dev: false
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}

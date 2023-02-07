@@ -1,19 +1,12 @@
 "use client";
 
-import { animate, motion, useMotionValue } from "framer-motion";
+import { animate, motion } from "framer-motion";
 import React from "react";
 
-import type { Result } from "@/components/quiz/types";
-import type { Kanji } from "@/lib/kanji";
+import type { KanjiResult } from "@/components/quiz/types";
 import { Icon } from "@/components/quiz/icon";
 
-export function QuizResults({
-  results,
-  list,
-}: {
-  results: Result[];
-  list: Kanji[];
-}) {
+export function QuizResults({ results }: { results: KanjiResult[] }) {
   const textRef = React.useRef<HTMLParagraphElement>(null);
   const [key, setKey] = React.useState(0);
 
@@ -49,18 +42,18 @@ export function QuizResults({
         transition={{ staggerChildren: 0.15 }}
       >
         {results.map((result, index) => {
-          const question = list[index];
+          const question = result.kanji;
           return (
             <motion.li
               key={index}
-              className="rounded-lg overflow-hidden bg-black border border-neutral-900 flex"
+              className="rounded-lg overflow-hidden dark:bg-black bg-white border dark:border-neutral-900 flex shadow-md dark:shadow-none"
               variants={{
                 shown: { opacity: 1, y: 0 },
                 hidden: { opacity: 0, y: 20 },
               }}
               transition={{ type: "spring", damping: 20 }}
             >
-              <div className="font-bold text-[7rem] leading-none bg-gradient-to-br from-neutral-900 to-black p-6 border-r border-inherit w-48 flex items-center justify-center">
+              <div className="font-bold text-[7rem] leading-none dark:bg-gradient-to-br dark:from-neutral-900 dark:to-black bg-white p-6 border-r border-inherit w-48 flex items-center justify-center">
                 {question.literal}
               </div>
               <div className="border-r border-inherit flex-1 p-8 space-y-2">
@@ -133,16 +126,16 @@ export function QuizResults({
           );
         })}
       </motion.ul>
-      <aside className="fixed h-fit right-[200px] rounded-lg border border-neutral-900 overflow-hidden w-[180px] flex flex-col">
+      <aside className="fixed h-fit right-[200px] rounded-lg border dark:border-neutral-900 overflow-hidden w-[180px] flex flex-col shadow-md dark:shadow-none">
         <p
-          className="text-[6rem] font-bold leading-none flex-1 flex items-center justify-center bg-black py-8"
+          className="text-[6rem] font-bold leading-none flex-1 flex items-center justify-center dark:bg-black bg-white py-8"
           ref={textRef}
         >
           0
         </p>
-        <div className="h-px w-[150%] absolute bg-neutral-900 left-1/2 top-1/2 -translate-x-1/2 -rotate-12" />
-        <p className="text-[6rem] font-bold leading-none flex-1 flex items-center justify-center py-8 bg-black">
-          {list.length * 2}
+        <div className="h-px w-[150%] absolute dark:bg-neutral-900 bg-neutral-200 left-1/2 top-1/2 -translate-x-1/2 -rotate-12" />
+        <p className="text-[6rem] font-bold leading-none flex-1 flex items-center justify-center py-8 dark:bg-black bg-white">
+          {results.length * 2}
         </p>
       </aside>
     </div>

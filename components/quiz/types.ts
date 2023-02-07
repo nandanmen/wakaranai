@@ -1,7 +1,13 @@
-export type Result = {
+import { Kanji } from "@/lib/kanji";
+
+export interface Result {
   reading: Answer;
   meaning: Answer;
-};
+}
+
+export interface KanjiResult extends Result {
+  kanji: Kanji;
+}
 
 export type Answer =
   | {

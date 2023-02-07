@@ -2,24 +2,25 @@
 
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { toHiragana } from "wanakana";
 
 import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
-import type { Result } from "@/components/quiz/types";
+import type { KanjiResult, Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
 import { Kanji } from "@/lib/kanji";
-import { QuizResults } from "./results";
+import { QuizResults } from "./results/results";
 
 const JP_DELIMITER = `.`;
 
 export const Quiz = ({ list }: { list: Kanji[] }) => {
   const [current, setCurrent] = React.useState(0);
-  const [results, setResults] = React.useState<Result[]>([]);
+  const [results, setResults] = React.useState<KanjiResult[]>([]);
   const [showResults, setShowResults] = React.useState(false);
   return (
     <div className="w-fit mx-auto h-full">
       {showResults ? (
-        <QuizResults results={results} list={list} />
+        <QuizResults results={results} />
       ) : (
         <div className="flex flex-col justify-center h-screen">
           <ProgressBar
@@ -29,7 +30,7 @@ export const Quiz = ({ list }: { list: Kanji[] }) => {
           <KanjiForm
             kanji={list[current]}
             onSubmit={(result) => {
-              setResults([...results, result]);
+              setResults([...results, { ...result, kanji: list[current] }]);
               if (current === list.length - 1) {
                 setShowResults(true);
               } else {
@@ -44,10 +45,11 @@ export const Quiz = ({ list }: { list: Kanji[] }) => {
 };
 
 const isJapaneseReadingCorrect = (reading: string, input: string) => {
+  let _reading = reading;
   if (reading.includes(JP_DELIMITER)) {
-    return reading.split(JP_DELIMITER)[0] === input;
+    _reading = reading.split(JP_DELIMITER)[0];
   }
-  return reading === input;
+  return toHiragana(_reading) === toHiragana(input);
 };
 
 const KanjiForm = ({
@@ -110,16 +112,6 @@ const KanjiForm = ({
           if (!submitted) {
             setSubmitted(true);
           }
-          return;
-        }
-        if (
-          document.activeElement ===
-          formRef.current?.elements.namedItem("reading")
-        ) {
-          const meaningInput = formRef.current?.elements.namedItem(
-            "meaning"
-          ) as HTMLInputElement;
-          meaningInput?.focus();
           return;
         }
         if (
