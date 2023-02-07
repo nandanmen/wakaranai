@@ -12,19 +12,20 @@ export default async function KanjiPage({
 }: {
   params: { level: string };
 }) {
-  const kanji = await getKanjiByLevel(Number(params.level));
+  const list = await getKanjiByLevel(Number(params.level));
+  if (!list) return null;
   return (
     <main className="max-w-[816px] mx-auto">
       <ul className="flex flex-wrap my-32 gap-6">
-        {kanji.map(([char, data]) => {
+        {list.map((kanji) => {
           const currentProgress = progress[getRandomIndex(progress.length)];
           return (
-            <li key={char}>
+            <li key={kanji.literal}>
               <Link
-                href={`/kanji/${char}`}
+                href={`/kanji/${kanji.literal}`}
                 className={`w-24 h-24 text-5xl font-bold rounded-md border dark:border-neutral-900 bg-gradient-to-br dark:from-neutral-900 dark:to-black flex items-center justify-center from-white to-neutral-100 dark:hover:from-neutral-800 dark:text-neutral-${currentProgress}00 transition-all`}
               >
-                {char}
+                {kanji.literal}
               </Link>
             </li>
           );

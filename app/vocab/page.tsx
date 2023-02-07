@@ -10,22 +10,22 @@ export default async function VocabPage() {
       <ul className="text-2xl my-32">
         {words.map((word) => {
           return (
-            <li key={word.word}>
+            <li key={word.literal}>
               <Link
-                href={`/words/n${word.level}/${word.pos}`}
+                href={`/words`}
                 className="flex items-center relative p-2 dark:bg-black bg-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-md"
               >
                 <span className="absolute left-2 right-2 dark:bg-neutral-800 bg-neutral-300 h-[1px]" />
                 <span className="bg-inherit px-1 relative">
-                  <span className="font-bold">{word.word}</span>
-                  {word.furigana.length > 0 && (
+                  <span className="font-bold">{word.literal}</span>
+                  {word.parts.length > 0 && (
                     <span className="text-neutral-500 ml-1">
-                      {word.furigana}
+                      {word.reading}
                     </span>
                   )}
                 </span>
                 <span className="relative text-base dark:text-neutral-500 text-neutral-700 text-righ ml-auto bg-inherit px-1">
-                  {word.meaning}
+                  {word.meanings[0].texts[0]}
                 </span>
               </Link>
             </li>

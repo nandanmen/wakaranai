@@ -7,9 +7,9 @@ import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
-import { Phrase } from "@/lib/words";
+import type { Word } from "@/lib/words";
 
-export const Quiz = ({ list }: { list: Phrase[] }) => {
+export const Quiz = ({ list }: { list: Word[] }) => {
   const [current, setCurrent] = React.useState(0);
   return (
     <div>
@@ -28,7 +28,7 @@ const QuizForm = ({
   phrase,
   onSubmit,
 }: {
-  phrase: Phrase;
+  phrase: Word;
   onSubmit: (result: Result) => void;
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -45,7 +45,7 @@ const QuizForm = ({
     });
     const meaningAnswer = getInputAnswer(meaningInput, (value) => {
       return phrase.meanings.some((meaning) =>
-        meaning.definitions.some(
+        meaning.texts.some(
           (definition) => definition.toLowerCase() === value.toLowerCase()
         )
       );
@@ -105,7 +105,7 @@ const QuizForm = ({
     return () => document.removeEventListener("keydown", handleEnter);
   }, [result, submitted, handleSubmit]);
 
-  const hasFurigana = typeof phrase.reading === "string";
+  const hasFurigana = phrase.parts.length > 0;
   return (
     <>
       <motion.div
@@ -118,7 +118,7 @@ const QuizForm = ({
         >
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
-              key={phrase.text}
+              key={phrase.literal}
               initial={{ y: -400 }}
               animate={{ y: 0 }}
               exit={{ y: 400 }}
@@ -182,7 +182,7 @@ const QuizForm = ({
                   <p className="font-mono text-neutral-500 mb-1">Meaning</p>
                   <p>
                     {phrase.meanings
-                      .flatMap((meaning) => meaning.definitions)
+                      .flatMap((meaning) => meaning.texts)
                       .slice(0, 5)
                       .join(", ")}
                   </p>
@@ -223,15 +223,18 @@ const PhraseText = ({
   phrase,
   showReading = false,
 }: {
-  phrase: Phrase;
+  phrase: Word;
   showReading?: boolean;
 }) => {
   const { parts } = phrase;
+  if (parts.length === 0) {
+    return <h1>{phrase.literal}</h1>;
+  }
   return (
     <h1>
       {parts.map((part) => {
         return (
-          <span key={part.text} className="relative">
+          <span key={part.literal} className="relative">
             {showReading && (
               <motion.span
                 animate={{ y: 0, opacity: 1 }}
@@ -242,7 +245,7 @@ const PhraseText = ({
                 {part.reading}
               </motion.span>
             )}
-            {part.text}
+            {part.literal}
           </span>
         );
       })}
