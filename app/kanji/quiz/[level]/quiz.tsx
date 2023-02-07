@@ -11,7 +11,7 @@ import { Kanji } from "@/lib/kanji";
 
 const JP_DELIMITER = `.`;
 
-export const Quiz = ({ list }: { list: [string, Kanji][] }) => {
+export const Quiz = ({ list }: { list: Kanji[] }) => {
   const [current, setCurrent] = React.useState(0);
   return (
     <div>
@@ -35,32 +35,29 @@ const KanjiForm = ({
   kanji,
   onSubmit,
 }: {
-  kanji: [string, Kanji];
+  kanji: Kanji;
   onSubmit: (result: Result) => void;
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
   const result = React.useMemo((): Result | null => {
-    if (!Array.isArray(kanji)) return null;
-    const [, data] = kanji;
-
     if (!submitted) return null;
     const form = formRef.current;
     if (!form) return null;
     const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
     const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
     const readingAnswer = getInputAnswer(readingInput, (value) => {
-      const kunReadingCorrect = data.readings_kun.some((reading) =>
+      const kunReadingCorrect = kanji.readings.kun.some((reading) =>
         isJapaneseReadingCorrect(reading, value)
       );
-      const onReadingCorrect = data.readings_on.some((reading) =>
+      const onReadingCorrect = kanji.readings.on.some((reading) =>
         isJapaneseReadingCorrect(reading, value)
       );
       return kunReadingCorrect || onReadingCorrect;
     });
     const meaningAnswer = getInputAnswer(meaningInput, (value) => {
-      return data.meanings.some(
+      return kanji.meanings.some(
         (meaning) => meaning.toLowerCase() === value.toLowerCase()
       );
     });
@@ -118,27 +115,19 @@ const KanjiForm = ({
     document.addEventListener("keydown", handleEnter);
     return () => document.removeEventListener("keydown", handleEnter);
   }, [result, submitted, handleSubmit]);
-
-  /**
-   * Not entirely sure why this would never be an array, but I ran into "not an
-   * iterable" errors in build time without this check.
-   */
-  if (!Array.isArray(kanji)) return null;
-  const [char, data] = kanji;
-
   return (
     <>
       <div className="flex border rounded-lg dark:border-neutral-800 overflow-hidden my-6 border-neutral-200 shadow-lg dark:shadow-none">
         <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
-              key={char}
+              key={kanji.literal}
               initial={{ x: 400 }}
               animate={{ x: 0 }}
               exit={{ x: -400 }}
               transition={{ type: "spring", damping: 20 }}
             >
-              {char}
+              {kanji.literal}
             </motion.h1>
           </AnimatePresence>
         </div>
@@ -170,7 +159,7 @@ const KanjiForm = ({
                     <span className="w-[60px] text-sm mr-2 font-mono text-neutral-500 translate-y-[2px]">
                       Kunyomi
                     </span>{" "}
-                    {data.readings_kun.join(", ")}
+                    {kanji.readings.kun.join(", ")}
                   </motion.p>
                   <motion.p
                     variants={{
@@ -183,7 +172,7 @@ const KanjiForm = ({
                     <span className="w-[60px] text-sm mr-2 font-mono text-neutral-500">
                       Onyomi
                     </span>{" "}
-                    {data.readings_on.join(", ")}
+                    {kanji.readings.on.join(", ")}
                   </motion.p>
                 </motion.div>
               )}
@@ -202,7 +191,7 @@ const KanjiForm = ({
                   transition={{ type: "spring", damping: 20, delay: 0.3 }}
                 >
                   <p className="font-mono text-neutral-500 mb-1">Meanings</p>
-                  <p>{data.meanings.join(", ")}</p>
+                  <p>{kanji.meanings.join(", ")}</p>
                 </motion.div>
               )}
             </div>
