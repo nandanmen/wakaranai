@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@next/font': 13.1.6
   '@radix-ui/react-icons': ^1.1.1
+  '@supabase/auth-helpers-nextjs': ^0.5.4
   '@supabase/supabase-js': ^2.7.1
   '@types/node': 18.11.18
   '@types/react': 18.0.27
@@ -25,6 +26,7 @@ specifiers:
 dependencies:
   '@next/font': 13.1.6
   '@radix-ui/react-icons': 1.1.1_react@18.2.0
+  '@supabase/auth-helpers-nextjs': 0.5.4_wwkefq4crizglppdxtjqhrdudm
   '@supabase/supabase-js': 2.7.1_encoding@0.1.13
   '@types/node': 18.11.18
   '@types/react': 18.0.27
@@ -323,6 +325,23 @@ packages:
 
   /@rushstack/eslint-patch/1.2.0:
     resolution: {integrity: sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==}
+    dev: false
+
+  /@supabase/auth-helpers-nextjs/0.5.4_wwkefq4crizglppdxtjqhrdudm:
+    resolution: {integrity: sha512-Xm3BMDOYPbNyuh8UXDRgBDc3JkeM5S2PfuC1jFJ73CCay4YiH1YxTz06Cvtp+vLH432qdjnqH+49ehVvUehPnQ==}
+    peerDependencies:
+      '@supabase/supabase-js': ^2.0.4
+    dependencies:
+      '@supabase/auth-helpers-shared': 0.2.4_wwkefq4crizglppdxtjqhrdudm
+      '@supabase/supabase-js': 2.7.1_encoding@0.1.13
+    dev: false
+
+  /@supabase/auth-helpers-shared/0.2.4_wwkefq4crizglppdxtjqhrdudm:
+    resolution: {integrity: sha512-c+hi3N6DhjPTzjXGOokre4gmMZOqt0f1ORrwZwi2s07pk3cbkmn77DwwVtlYMNi3oZNYRQqAfxJu83UzpJrrmg==}
+    peerDependencies:
+      '@supabase/supabase-js': ^2.0.4
+    dependencies:
+      '@supabase/supabase-js': 2.7.1_encoding@0.1.13
     dev: false
 
   /@supabase/functions-js/2.0.0_encoding@0.1.13:

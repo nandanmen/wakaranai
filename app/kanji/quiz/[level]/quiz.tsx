@@ -10,6 +10,7 @@ import type { KanjiResult, Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
 import { Kanji } from "@/lib/kanji";
 import { QuizResults } from "./results/results";
+import { useSupabase } from "@/app/supabase";
 
 const JP_DELIMITER = `.`;
 
@@ -59,6 +60,8 @@ const KanjiForm = ({
   kanji: Kanji;
   onSubmit: (result: Result) => void;
 }) => {
+  const { supabase } = useSupabase();
+
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
@@ -126,6 +129,7 @@ const KanjiForm = ({
     document.addEventListener("keydown", handleEnter);
     return () => document.removeEventListener("keydown", handleEnter);
   }, [result, submitted, handleSubmit]);
+
   return (
     <>
       <div className="flex border rounded-lg dark:border-neutral-800 overflow-hidden my-6 border-neutral-200 shadow-lg dark:shadow-none">
@@ -209,10 +213,23 @@ const KanjiForm = ({
           </form>
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="flex">
+        <button
+          className="px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
+          onClick={() => {
+            supabase.auth.signInWithOtp({
+              email: "nanda.s@hey.com",
+              options: {
+                emailRedirectTo: window.location.toString(),
+              },
+            });
+          }}
+        >
+          Login
+        </button>
         <motion.button
           layout
-          className="px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
+          className="ml-auto px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
           onClick={() => {
             if (submitted) {
               handleSubmit();

@@ -8,7 +8,6 @@ import { Icon } from "@/components/quiz/icon";
 
 export function QuizResults({ results }: { results: KanjiResult[] }) {
   const textRef = React.useRef<HTMLParagraphElement>(null);
-  const [key, setKey] = React.useState(0);
 
   const numReadingCorrect = results.filter(
     (result) => result.reading.type === "correct"
@@ -28,13 +27,10 @@ export function QuizResults({ results }: { results: KanjiResult[] }) {
         textRef.current.innerText = latest.toFixed(0);
       },
     });
-  }, [totalCorrect, key]);
+  }, [totalCorrect]);
 
   return (
-    <div className="w-fit mx-auto my-32 flex" key={key}>
-      <button onClick={() => setKey(key + 1)} className="fixed top-2 left-2">
-        Refresh
-      </button>
+    <div className="w-fit mx-auto my-32 flex">
       <motion.ul
         className="w-[1000px] space-y-12 mr-64"
         animate="shown"
