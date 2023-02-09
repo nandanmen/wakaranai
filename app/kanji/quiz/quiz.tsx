@@ -3,6 +3,7 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toHiragana } from "wanakana";
+import { Root, Trigger } from "@radix-ui/react-dialog";
 
 import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
@@ -12,6 +13,7 @@ import { Kanji } from "@/lib/kanji";
 import { useSupabase } from "@/app/supabase";
 import { useRouter } from "next/navigation";
 import type { KanjiQuiz } from "@/lib/quiz";
+import { LoginModal } from "@/components/login-modal";
 
 const JP_DELIMITER = `.`;
 
@@ -221,19 +223,17 @@ const KanjiForm = ({
         </div>
       </div>
       <div className="flex">
-        <button
-          className="px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
-          onClick={() => {
-            supabase.auth.signInWithOtp({
-              email: "nanda.s@hey.com",
-              options: {
-                emailRedirectTo: window.location.toString(),
-              },
-            });
-          }}
-        >
-          Login
-        </button>
+        <Root>
+          <p className="text-sm text-neutral-600">
+            <Trigger asChild>
+              <button className="underline hover:text-white focus:outline-none focus-visible:text-white">
+                Login
+              </button>
+            </Trigger>
+            {` `} to save your progress
+          </p>
+          <LoginModal />
+        </Root>
         <motion.button
           layout
           className="ml-auto px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
