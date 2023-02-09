@@ -3,11 +3,12 @@
 import { animate, motion } from "framer-motion";
 import React from "react";
 
-import type { KanjiResult } from "@/components/quiz/types";
 import { Icon } from "@/components/quiz/icon";
+import { KanjiQuiz } from "@/lib/quiz";
 
-export function QuizResults({ results }: { results: KanjiResult[] }) {
+export function QuizResults({ quiz }: { quiz: KanjiQuiz }) {
   const textRef = React.useRef<HTMLParagraphElement>(null);
+  const { progress: results, questions } = quiz;
 
   const numReadingCorrect = results.filter(
     (result) => result.reading.type === "correct"
@@ -38,7 +39,7 @@ export function QuizResults({ results }: { results: KanjiResult[] }) {
         transition={{ staggerChildren: 0.15 }}
       >
         {results.map((result, index) => {
-          const question = result.kanji;
+          const question = questions[index];
           return (
             <motion.li
               key={index}
@@ -54,7 +55,7 @@ export function QuizResults({ results }: { results: KanjiResult[] }) {
               </div>
               <div className="border-r border-inherit flex-1 p-8 space-y-2">
                 <h3 className="font-mono">Reading</h3>
-                <p className="text-xl py-2 border-b border-inherit relative">
+                <div className="text-xl py-2 border-b border-inherit relative">
                   {result.reading.value || (
                     <span className="text-base italic text-neutral-700">
                       Skipped
@@ -67,7 +68,7 @@ export function QuizResults({ results }: { results: KanjiResult[] }) {
                       hidden: { pathLength: 0 },
                     }}
                   />
-                </p>
+                </div>
                 <motion.div
                   animate={{
                     y: 0,

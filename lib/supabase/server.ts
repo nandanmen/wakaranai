@@ -11,4 +11,4 @@ export const words = () => createServerClient().from("words");
 
 export const kanji = () => createServerClient().from("kanji");
 
-export const kanjiQuizzes = () => createServerClient().from("kanji_quizzes");
+export const quizzes = () => createServerClient().from("quizzes");

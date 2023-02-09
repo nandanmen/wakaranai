@@ -6,41 +6,48 @@ import { toHiragana } from "wanakana";
 
 import { FormInput } from "@/components/quiz/input";
 import { ProgressBar } from "@/components/quiz/progress-bar";
-import type { KanjiResult, Result } from "@/components/quiz/types";
+import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
 import { Kanji } from "@/lib/kanji";
-import { QuizResults } from "./results/results";
 import { useSupabase } from "@/app/supabase";
+import { useRouter } from "next/navigation";
+import type { KanjiQuiz } from "@/lib/quiz";
 
 const JP_DELIMITER = `.`;
 
-export const Quiz = ({ list }: { list: Kanji[] }) => {
+export const Quiz = ({ quiz }: { quiz: KanjiQuiz }) => {
+  const { supabase } = useSupabase();
   const [current, setCurrent] = React.useState(0);
-  const [results, setResults] = React.useState<KanjiResult[]>([]);
-  const [showResults, setShowResults] = React.useState(false);
+  const [results, setResults] = React.useState<Result[]>([]);
+  const router = useRouter();
+
+  const list = quiz.questions;
   return (
     <div className="w-fit mx-auto h-full">
-      {showResults ? (
-        <QuizResults results={results} />
-      ) : (
-        <div className="flex flex-col justify-center h-screen">
-          <ProgressBar
-            value={(current + 1) / list.length}
-            steps={list.length}
-          />
-          <KanjiForm
-            kanji={list[current]}
-            onSubmit={(result) => {
-              setResults([...results, { ...result, kanji: list[current] }]);
-              if (current === list.length - 1) {
-                setShowResults(true);
-              } else {
-                setCurrent(current + 1);
-              }
-            }}
-          />
-        </div>
-      )}
+      <div className="flex flex-col justify-center h-screen">
+        <ProgressBar value={(current + 1) / list.length} steps={list.length} />
+        <KanjiForm
+          kanji={list[current]}
+          onSubmit={async (result) => {
+            const newResults = [...results, result];
+            console.log(newResults);
+            setResults(newResults);
+            await supabase
+              .from("quizzes")
+              .update({ progress: newResults })
+              .eq("id", quiz.quizId);
+            if (current === list.length - 1) {
+              await supabase
+                .from("quizzes")
+                .update({ completed_at: new Date() })
+                .eq("id", quiz.quizId);
+              router.push(`/results/${quiz.quizId}`);
+            } else {
+              setCurrent(current + 1);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

@@ -33,3 +33,9 @@ export async function getKanjiByLevelAndCount(
   }
   return response.data as Kanji[];
 }
+
+export async function getKanjiFromIds(ids: number[]): Promise<Kanji[]> {
+  const client = createServerClient();
+  const { data } = await client.from("kanji").select().in("id", ids);
+  return data as Kanji[];
+}
