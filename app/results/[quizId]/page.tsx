@@ -1,4 +1,3 @@
-import { KanjiResult } from "@/components/quiz/types";
 import { getQuizById } from "@/lib/quiz";
 import { redirect } from "next/navigation";
 import { QuizResults } from "./results";

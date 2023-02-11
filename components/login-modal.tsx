@@ -16,18 +16,15 @@ export function LoginModal() {
   const controls = useAnimationControls();
   const submit = async () => {
     setState("loading");
-    controls.start({
+    await controls.start({
       x: "66.6%",
       transition: {
         type: "tween",
         ease: "linear",
         duration: 2,
-        repeat: Infinity,
       },
     });
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     setState("success");
-    controls.stop();
   };
 
   return (
@@ -55,15 +52,7 @@ export function LoginModal() {
             className="w-full relative mb-6 group overflow-hidden py-[1px]"
             onSubmit={(evt) => {
               evt.preventDefault();
-              controls.start({
-                x: "66.6%",
-                transition: {
-                  type: "tween",
-                  ease: "linear",
-                  duration: 2,
-                  repeat: Infinity,
-                },
-              });
+              submit();
             }}
           >
             <label htmlFor="login-email" hidden>

@@ -69,8 +69,6 @@ const KanjiForm = ({
   kanji: Kanji;
   onSubmit: (result: Result) => void;
 }) => {
-  const { supabase } = useSupabase();
-
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
