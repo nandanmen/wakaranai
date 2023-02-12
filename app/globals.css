@@ -58,3 +58,10 @@ a {
     background-size: 40px 40px;
   }
 }
+
+.loading-mask {
+  mask-image: linear-gradient(
+    black var(--stop, 100%),
+    transparent var(--stop, 100%)
+  );
+}

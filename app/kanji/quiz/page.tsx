@@ -1,4 +1,5 @@
 import { getOrCreateQuiz, type QuizLevel } from "@/lib/quiz";
+import { LoadingScreen } from "./loading-screen";
 import { Quiz } from "./quiz";
 
 export default async function QuizPage({ searchParams }: any) {
@@ -8,6 +9,7 @@ export default async function QuizPage({ searchParams }: any) {
   );
   return (
     <main className="min-h-screen">
+      <LoadingScreen />
       <Quiz quiz={quiz} />
     </main>
   );
