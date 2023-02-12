@@ -32,7 +32,7 @@ export const FormInput = ({ label, type, disabled }: FormInputProps) => {
       />
       {!disabled && (
         <>
-          <Icon type={type} />
+          <Icon type={type} key={type} />
           {type === "skipped" && (
             <motion.p
               className="absolute bottom-2 italic text-neutral-500"

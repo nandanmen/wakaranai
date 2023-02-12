@@ -1,19 +1,19 @@
 "use client";
 
-import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { toHiragana } from "wanakana";
-import { Root, Trigger } from "@radix-ui/react-dialog";
-
+import { useSupabase } from "@/app/supabase";
+import { LoginModal } from "@/components/login-modal";
 import { FormInput } from "@/components/quiz/input";
+import { MarkCorrectButton } from "@/components/quiz/mark-correct-button";
 import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
 import { Kanji } from "@/lib/kanji";
-import { useSupabase } from "@/app/supabase";
-import { useRouter } from "next/navigation";
 import type { KanjiQuiz } from "@/lib/quiz";
-import { LoginModal } from "@/components/login-modal";
+import { Root, Trigger } from "@radix-ui/react-dialog";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toHiragana } from "wanakana";
 
 const JP_DELIMITER = `.`;
 
@@ -71,6 +71,29 @@ const isJapaneseReadingCorrect = (reading: string, input: string) => {
   return toHiragana(_reading) === toHiragana(input);
 };
 
+const calculateAnswer = (form: HTMLFormElement, kanji: Kanji): Result => {
+  const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
+  const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
+  const readingAnswer = getInputAnswer(readingInput, (value) => {
+    const kunReadingCorrect = kanji.readings.kun.some((reading) =>
+      isJapaneseReadingCorrect(reading, value)
+    );
+    const onReadingCorrect = kanji.readings.on.some((reading) =>
+      isJapaneseReadingCorrect(reading, value)
+    );
+    return kunReadingCorrect || onReadingCorrect;
+  });
+  const meaningAnswer = getInputAnswer(meaningInput, (value) => {
+    return kanji.meanings.some(
+      (meaning) => meaning.toLowerCase() === value.toLowerCase()
+    );
+  });
+  return {
+    reading: readingAnswer,
+    meaning: meaningAnswer,
+  };
+};
+
 const KanjiForm = ({
   kanji,
   loading,
@@ -82,35 +105,11 @@ const KanjiForm = ({
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
+  const [result, setResult] = React.useState<Result | null>(null);
 
-  const result = React.useMemo((): Result | null => {
-    if (!submitted) return null;
-    const form = formRef.current;
-    if (!form) return null;
-    const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
-    const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
-    const readingAnswer = getInputAnswer(readingInput, (value) => {
-      const kunReadingCorrect = kanji.readings.kun.some((reading) =>
-        isJapaneseReadingCorrect(reading, value)
-      );
-      const onReadingCorrect = kanji.readings.on.some((reading) =>
-        isJapaneseReadingCorrect(reading, value)
-      );
-      return kunReadingCorrect || onReadingCorrect;
-    });
-    const meaningAnswer = getInputAnswer(meaningInput, (value) => {
-      return kanji.meanings.some(
-        (meaning) => meaning.toLowerCase() === value.toLowerCase()
-      );
-    });
-    return {
-      reading: readingAnswer,
-      meaning: meaningAnswer,
-    };
-  }, [submitted, kanji]);
-
-  const handleSubmit = React.useCallback(() => {
+  const handleNext = React.useCallback(() => {
     setSubmitted(false);
+    setResult(null);
     const form = formRef.current;
     if (form) {
       form.reset();
@@ -122,16 +121,25 @@ const KanjiForm = ({
     onSubmit(result as Result);
   }, [onSubmit, result]);
 
+  const handleSubmit = React.useCallback(() => {
+    setSubmitted(true);
+    const form = formRef.current;
+    if (form) {
+      const result = calculateAnswer(form, kanji);
+      setResult(result);
+    }
+  }, [kanji]);
+
   React.useEffect(() => {
     const handleEnter = (evt: KeyboardEvent) => {
       if (evt.key === "Enter") {
         if (submitted) {
-          handleSubmit();
+          handleNext();
           return;
         }
         if (evt.metaKey) {
           if (!submitted) {
-            setSubmitted(true);
+            handleSubmit();
           }
           return;
         }
@@ -139,19 +147,31 @@ const KanjiForm = ({
           document.activeElement ===
           formRef.current?.elements.namedItem("meaning")
         ) {
-          setSubmitted(true);
+          evt.preventDefault();
+          handleSubmit();
           return;
         }
       }
     };
     document.addEventListener("keydown", handleEnter);
     return () => document.removeEventListener("keydown", handleEnter);
-  }, [result, submitted, handleSubmit]);
+  }, [result, submitted, handleNext, handleSubmit]);
+
+  const markCorrect = (type: "reading" | "meaning") => () => {
+    if (!result) return;
+    setResult({
+      ...result,
+      [type]: {
+        ...result?.[type],
+        type: "correct",
+      },
+    });
+  };
 
   return (
     <>
-      <div className="flex border rounded-lg dark:border-neutral-800 overflow-hidden my-6 border-neutral-200 shadow-lg dark:shadow-none">
-        <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative">
+      <div className="flex my-6 shadow-lg dark:shadow-none">
+        <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative rounded-l-lg border border-neutral-800">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
               key={kanji.literal}
@@ -164,16 +184,16 @@ const KanjiForm = ({
             </motion.h1>
           </AnimatePresence>
         </div>
-        <div className="p-12 dark:bg-black bg-white flex items-center">
+        <div className="p-12 dark:bg-black bg-white flex items-center rounded-r-lg border border-neutral-800 border-l-0">
           <form
             ref={formRef}
             className="w-[400px] text-lg"
             onSubmit={(evt) => {
               evt.preventDefault();
               if (!submitted) {
-                setSubmitted(true);
-              } else {
                 handleSubmit();
+              } else {
+                handleNext();
               }
             }}
           >
@@ -183,6 +203,13 @@ const KanjiForm = ({
                 type={result?.reading.type}
                 disabled={loading}
               />
+              <AnimatePresence>
+                {result?.reading.type === "incorrect" && (
+                  <div className="absolute -right-12 top-7 translate-x-1/2 translate-y-[3px]">
+                    <MarkCorrectButton onClick={markCorrect("reading")} />
+                  </div>
+                )}
+              </AnimatePresence>
               {submitted && (
                 <motion.div className="mt-2" animate="show" initial="hidden">
                   <motion.p
@@ -214,12 +241,19 @@ const KanjiForm = ({
                 </motion.div>
               )}
             </div>
-            <div>
+            <div className="relative">
               <FormInput
                 label="Meaning"
                 type={result?.meaning.type}
                 disabled={loading}
               />
+              <AnimatePresence>
+                {result?.meaning.type === "incorrect" && (
+                  <div className="absolute -right-12 top-7 translate-x-1/2 translate-y-[3px]">
+                    <MarkCorrectButton onClick={markCorrect("meaning")} />
+                  </div>
+                )}
+              </AnimatePresence>
               {submitted && (
                 <motion.div
                   className="text-sm mt-3"
@@ -256,9 +290,9 @@ const KanjiForm = ({
           className="ml-auto px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
           onClick={() => {
             if (submitted) {
-              handleSubmit();
+              handleNext();
             } else {
-              setSubmitted(true);
+              handleSubmit();
             }
           }}
         >

@@ -23,7 +23,7 @@ export default async function KanjiPage({
             <li key={kanji.literal}>
               <Link
                 href={`/kanji/${kanji.literal}`}
-                className={`w-24 h-24 text-5xl font-bold rounded-md border dark:border-neutral-900 bg-gradient-to-br dark:from-neutral-900 dark:to-black flex items-center justify-center from-white to-neutral-100 dark:hover:from-neutral-800 dark:text-neutral-${currentProgress}00 transition-all`}
+                className={`w-24 h-24 text-5xl font-bold rounded-md border dark:border-neutral-900 bg-gradient-to-br dark:from-neutral-900 dark:to-black flex items-center justify-center from-white to-neutral-100 dark:hover:from-neutral-800 dark:hover:to-black dark:text-neutral-${currentProgress}00 transition-all`}
               >
                 {kanji.literal}
               </Link>

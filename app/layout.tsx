@@ -1,4 +1,3 @@
-import Script from "next/script";
 import { createServerClient } from "@/lib/supabase/server";
 import { SupabaseListener, SupabaseProvider } from "./supabase";
 import "./globals.css";
