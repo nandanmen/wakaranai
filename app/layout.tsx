@@ -1,6 +1,17 @@
+import Script from "next/script";
 import { createServerClient } from "@/lib/supabase/server";
 import { SupabaseListener, SupabaseProvider } from "./supabase";
 import "./globals.css";
+
+const loadScript = `
+  (function () {
+    if (localStorage.getItem('been-here')) {
+      document.body.style.setProperty('--loading-display', 'none');
+    } else {
+      localStorage.setItem('been-here', 'true');
+    }
+  })()
+`;
 
 export default async function RootLayout({
   children,
@@ -18,6 +29,7 @@ export default async function RootLayout({
       */}
       <head />
       <body className="grid-background">
+        <script dangerouslySetInnerHTML={{ __html: loadScript }} />
         <SupabaseProvider session={session}>
           <SupabaseListener serverAccessToken={session?.access_token} />
           {children}

@@ -7,7 +7,7 @@ export function LoadingScreen() {
   const controls = useAnimationControls();
   return (
     <motion.div
-      className="bg-black inset-0 flex items-center justify-center loading-mask fixed z-10 pointer-events-none"
+      className="bg-black inset-0 items-center justify-center loading fixed z-10 pointer-events-none"
       animate={controls}
       initial={{ "--stop": "100%" } as any}
       aria-hidden="true"

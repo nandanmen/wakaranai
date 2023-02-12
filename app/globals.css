@@ -59,9 +59,10 @@ a {
   }
 }
 
-.loading-mask {
+.loading {
   mask-image: linear-gradient(
     black var(--stop, 100%),
     transparent var(--stop, 100%)
   );
+  display: var(--loading-display, flex);
 }

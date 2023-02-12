@@ -7,6 +7,11 @@ export const createServerClient = () =>
     cookies,
   });
 
+export const getSession = () => {
+  const supabase = createServerClient();
+  return supabase.auth.getSession();
+};
+
 export const words = () => createServerClient().from("words");
 
 export const kanji = () => createServerClient().from("kanji");
