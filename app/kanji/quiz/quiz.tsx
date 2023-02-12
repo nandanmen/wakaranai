@@ -21,24 +21,33 @@ export const Quiz = ({ quiz }: { quiz: KanjiQuiz }) => {
   const { supabase } = useSupabase();
   const [current, setCurrent] = React.useState(0);
   const [results, setResults] = React.useState<Result[]>([]);
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
   const list = quiz.questions;
+  const isLast = current === list.length - 1;
+
+  React.useEffect(() => {
+    async function saveResults() {
+      await supabase
+        .from("quizzes")
+        .update({ progress: results })
+        .eq("id", quiz.quizId);
+    }
+    saveResults();
+  }, [results, supabase, quiz.quizId]);
+
   return (
     <div className="w-fit mx-auto h-full">
       <div className="flex flex-col justify-center h-screen">
         <ProgressBar value={(current + 1) / list.length} steps={list.length} />
         <KanjiForm
+          loading={loading}
           kanji={list[current]}
           onSubmit={async (result) => {
-            const newResults = [...results, result];
-            console.log(newResults);
-            setResults(newResults);
-            await supabase
-              .from("quizzes")
-              .update({ progress: newResults })
-              .eq("id", quiz.quizId);
-            if (current === list.length - 1) {
+            setResults([...results, result]);
+            if (isLast) {
+              setLoading(true);
               await supabase
                 .from("quizzes")
                 .update({ completed_at: new Date() })
@@ -64,9 +73,11 @@ const isJapaneseReadingCorrect = (reading: string, input: string) => {
 
 const KanjiForm = ({
   kanji,
+  loading,
   onSubmit,
 }: {
   kanji: Kanji;
+  loading: boolean;
   onSubmit: (result: Result) => void;
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -167,7 +178,11 @@ const KanjiForm = ({
             }}
           >
             <div className="mb-8 relative">
-              <FormInput label="Reading" type={result?.reading.type} />
+              <FormInput
+                label="Reading"
+                type={result?.reading.type}
+                disabled={loading}
+              />
               {submitted && (
                 <motion.div className="mt-2" animate="show" initial="hidden">
                   <motion.p
@@ -200,7 +215,11 @@ const KanjiForm = ({
               )}
             </div>
             <div>
-              <FormInput label="Meaning" type={result?.meaning.type} />
+              <FormInput
+                label="Meaning"
+                type={result?.meaning.type}
+                disabled={loading}
+              />
               {submitted && (
                 <motion.div
                   className="text-sm mt-3"
