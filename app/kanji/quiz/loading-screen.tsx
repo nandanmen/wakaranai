@@ -4,7 +4,6 @@ import React from "react";
 import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 
 export function LoadingScreen() {
-  const [key, setKey] = React.useState(0);
   const controls = useAnimationControls();
   return (
     <motion.div
@@ -13,7 +12,6 @@ export function LoadingScreen() {
       initial={{ "--stop": "100%" } as any}
     >
       <LoadingAnimation
-        key={key}
         onComplete={() => {
           controls.start({
             "--stop": "0%",
