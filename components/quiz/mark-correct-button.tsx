@@ -14,7 +14,7 @@ export const MarkCorrectButton = ({ onClick }: { onClick: () => void }) => {
             initial={{ x: -16, opacity: 0 }}
             exit={{ x: 16, opacity: 0 }}
             transition={{ type: "spring", damping: 20 }}
-            className="bg-black hover:bg-neutral-900 p-2 rounded-full border border-neutral-800 flex items-center justify-center"
+            className="dark:bg-black dark:hover:bg-neutral-900 p-2 rounded-full border dark:border-neutral-800 flex items-center justify-center bg-white shadow-sm dark:shadow-none"
             onClick={onClick}
             type="button"
           >
@@ -30,10 +30,14 @@ export const MarkCorrectButton = ({ onClick }: { onClick: () => void }) => {
             initial={{ x: -16, opacity: 0 }}
             transition={{ type: "spring", damping: 20 }}
           >
-            <div className="bg-neutral-900 py-2 px-3 rounded-[4px] text-sm">
+            <div className="dark:bg-neutral-900 bg-white border py-2 px-3 rounded-[4px] text-sm">
               Mark correct
             </div>
-            <Tooltip.Arrow className="fill-neutral-900" width={12} height={8} />
+            <Tooltip.Arrow
+              className="dark:fill-neutral-900 fill-neutral-300"
+              width={12}
+              height={8}
+            />
           </TooltipContent>
         </Tooltip.Portal>
       </Tooltip.Root>

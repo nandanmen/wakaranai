@@ -171,7 +171,7 @@ const KanjiForm = ({
   return (
     <>
       <div className="flex my-6 shadow-lg dark:shadow-none">
-        <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative rounded-l-lg border border-neutral-800">
+        <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative rounded-l-lg border dark:border-neutral-800">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
               key={kanji.literal}
@@ -179,12 +179,13 @@ const KanjiForm = ({
               animate={{ x: 0 }}
               exit={{ x: -400 }}
               transition={{ type: "spring", damping: 20 }}
+              className="text-neutral-800 dark:text-white"
             >
               {kanji.literal}
             </motion.h1>
           </AnimatePresence>
         </div>
-        <div className="p-12 dark:bg-black bg-white flex items-center rounded-r-lg border border-neutral-800 border-l-0">
+        <div className="p-12 dark:bg-black bg-white flex items-center rounded-r-lg border dark:border-neutral-800 border-l-0">
           <form
             ref={formRef}
             className="w-[400px] text-lg"
