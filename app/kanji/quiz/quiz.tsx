@@ -170,8 +170,8 @@ const KanjiForm = ({
 
   return (
     <>
-      <div className="flex my-6 shadow-lg dark:shadow-none">
-        <div className="text-[18rem] font-bold bg-gradient-to-br dark:from-neutral-800 dark:to-black from-white to-white p-16 border-r border-inherit overflow-hidden relative rounded-l-lg border dark:border-neutral-800">
+      <div className="flex my-6 shadow-lg">
+        <div className="text-[18rem] font-bold bg-gradient-to-br from-gray3 to-gray1 p-16 overflow-hidden relative rounded-l-lg border border-gray4">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
               key={kanji.literal}
@@ -179,13 +179,13 @@ const KanjiForm = ({
               animate={{ x: 0 }}
               exit={{ x: -400 }}
               transition={{ type: "spring", damping: 20 }}
-              className="text-neutral-800 dark:text-white"
+              className="text-gray12"
             >
               {kanji.literal}
             </motion.h1>
           </AnimatePresence>
         </div>
-        <div className="p-12 dark:bg-black bg-white flex items-center rounded-r-lg border dark:border-neutral-800 border-l-0">
+        <div className="p-12 bg-gray2 flex items-center rounded-r-lg border border-gray4 border-l-0">
           <form
             ref={formRef}
             className="w-[400px] text-lg"
@@ -288,7 +288,7 @@ const KanjiForm = ({
         </Root>
         <motion.button
           layout
-          className="ml-auto px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
+          className="ml-auto px-4 py-2 rounded-md border border-gray4"
           onClick={() => {
             if (submitted) {
               handleNext();

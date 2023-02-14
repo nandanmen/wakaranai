@@ -39,7 +39,7 @@ export const IconOnly = ({
   return (
     <svg viewBox="0 0 15 15" width={size} height={size}>
       <motion.path
-        className="stroke-black dark:stroke-white"
+        className="stroke-gray12"
         d={iconMap[type]}
         fill="none"
         strokeLinecap="round"

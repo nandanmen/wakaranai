@@ -37,5 +37,12 @@ export async function getKanjiByLevelAndCount(
 export async function getKanjiFromIds(ids: number[]): Promise<Kanji[]> {
   const client = createServerClient();
   const { data } = await client.from("kanji").select().in("id", ids);
-  return data as Kanji[];
+  if (!data) return [];
+
+  const inOrder = [];
+  for (const id of ids) {
+    const kanji = data.find((k) => k.id === id);
+    if (kanji) inOrder.push(kanji);
+  }
+  return inOrder;
 }

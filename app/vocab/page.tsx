@@ -13,7 +13,7 @@ export default async function VocabPage() {
             <li key={word.literal}>
               <Link
                 href={`/words`}
-                className="flex items-center relative p-2 dark:bg-black bg-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-md"
+                className="flex items-center relative p-2 dark:bg-neutral-900 bg-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-md"
               >
                 <span className="absolute left-2 right-2 dark:bg-neutral-800 bg-neutral-300 h-[1px]" />
                 <span className="bg-inherit px-1 relative">

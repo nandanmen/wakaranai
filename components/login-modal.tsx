@@ -30,7 +30,7 @@ export function LoginModal() {
   return (
     <Dialog.Portal>
       <Overlay
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+        className="fixed inset-0 bg-neutral-900/20 backdrop-blur-sm"
         animate={{ opacity: 1 }}
         initial={{ opacity: 0 }}
         transition={{ type: "spring", duration: 0.5 }}
@@ -43,8 +43,8 @@ export function LoginModal() {
         transition={{ type: "spring", duration: 0.5 }}
         onCloseAutoFocus={() => setState("idle")}
       >
-        <motion.div className="from-dark-800 to-dark-900 bg-gradient-to-b border border-neutral-900 p-10 rounded-lg w-[400px] relative">
-          <div className="h-px absolute -top-[1px] left-0 right-0 bg-gradient-to-r from-transparent via-dark-700 to-transparent" />
+        <motion.div className="bg-gray2 border border-gray4 p-10 rounded-lg w-[400px] relative">
+          <div className="h-px absolute -top-[1px] left-0 right-0 bg-gradient-to-r from-transparent via-gray5 to-transparent" />
           <Dialog.Title className="text-2xl font-bold mb-4">
             Login With Email
           </Dialog.Title>
@@ -61,7 +61,7 @@ export function LoginModal() {
             <input
               id="login-email"
               type="email"
-              className="block bg-transparent w-full py-3 placeholder:text-neutral-600 focus:outline-none disabled:text-neutral-600"
+              className="block bg-transparent w-full py-3 placeholder:text-gray8 focus:outline-none disabled:text-gray8"
               placeholder="john@example.com"
               disabled={state === "loading"}
             />
@@ -69,7 +69,7 @@ export function LoginModal() {
               <div className="absolute bottom-3 right-0">
                 <svg viewBox="0 0 15 15" width="20" height="20">
                   <motion.path
-                    className="stroke-black dark:stroke-white"
+                    className="stroke-gray12"
                     d="M 4 8 L 7 10.8 L 12 4"
                     fill="none"
                     strokeLinecap="round"
@@ -109,22 +109,26 @@ export function LoginModal() {
               }}
             />
           </form>
-          <Dialog.Description className="text-sm text-neutral-600">
+          <Dialog.Description className="text-sm">
             {state === "success" ? (
               <motion.span
                 style={{ display: "block" }}
                 animate={{ y: 0, opacity: 1 }}
                 initial={{ y: 16, opacity: 0 }}
                 transition={{ type: "spring", damping: 20 }}
+                className="text-gray10"
               >
                 {`Thank you! Check your inbox for a magic link; if it's not there, it might be in the promotions tab.`}
               </motion.span>
             ) : (
-              <span key="ready">{`We'll send you a magic link that will either create an account or log in to an existing one.`}</span>
+              <span
+                key="ready"
+                className="text-gray10"
+              >{`We'll send you a magic link that will either create an account or log in to an existing one.`}</span>
             )}
           </Dialog.Description>
           <Dialog.Close asChild>
-            <button className="absolute -top-5 -right-5 flex items-center justify-center w-10 h-10 bg-black rounded-full from-dark-800 to-dark-900 bg-gradient-to-b border border-neutral-900 shadow-md">
+            <button className="absolute -top-5 -right-5 flex items-center justify-center w-10 h-10 bg-gray3 rounded-full border border-gray5 shadow-md">
               <Cross1Icon />
             </button>
           </Dialog.Close>

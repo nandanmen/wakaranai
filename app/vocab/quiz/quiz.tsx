@@ -130,7 +130,7 @@ const QuizForm = ({
         </motion.div>
         <motion.div
           layout
-          className="p-12 dark:bg-black bg-white flex items-center"
+          className="p-12 dark:bg-neutral-900 bg-white flex items-center"
         >
           <form
             ref={formRef}
@@ -195,7 +195,7 @@ const QuizForm = ({
       <div className="flex justify-end">
         <motion.button
           layout
-          className="px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-black bg-white border-neutral-300"
+          className="px-4 py-2 rounded-md border dark:border-neutral-700 dark:bg-neutral-900 bg-white border-neutral-300"
           onClick={() => {
             if (submitted) {
               handleSubmit();

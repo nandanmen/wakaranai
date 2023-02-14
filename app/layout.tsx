@@ -27,7 +27,7 @@ export default async function RootLayout({
         head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
       <head />
-      <body className="grid-background">
+      <body className="bg-gray1">
         <script dangerouslySetInnerHTML={{ __html: loadScript }} />
         <SupabaseProvider session={session}>
           <SupabaseListener serverAccessToken={session?.access_token} />
