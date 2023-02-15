@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/kanji/quiz",
+        destination: "/kanji/5",
         permanent: false,
       },
       {
