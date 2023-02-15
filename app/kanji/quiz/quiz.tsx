@@ -275,7 +275,7 @@ const KanjiForm = ({
         </div>
       </div>
       <div className="flex">
-        <Root>
+        {/* <Root>
           <p className="text-sm text-neutral-600">
             <Trigger asChild>
               <button className="underline hover:text-white focus:outline-none focus-visible:text-white">
@@ -285,7 +285,7 @@ const KanjiForm = ({
             {` `} to save your progress
           </p>
           <LoginModal />
-        </Root>
+        </Root> */}
         <motion.button
           layout
           className="ml-auto px-4 py-2 rounded-md border border-gray4"

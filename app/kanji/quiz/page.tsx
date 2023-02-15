@@ -1,25 +1,19 @@
 import { getOrCreateQuiz, type QuizLevel } from "@/lib/quiz";
-import { getSession } from "@/lib/supabase/server";
-import { LoadingScreen } from "./loading-screen";
 import { Quiz } from "./quiz";
 
 export default async function QuizPage({ searchParams }: any) {
-  const {
-    data: { session },
-  } = await getSession();
   const quiz = await getOrCreateQuiz(
     validateLevel(searchParams.level),
     validateCount(searchParams.count)
   );
   return (
     <main className="min-h-screen">
-      {!session && <LoadingScreen />}
       <Quiz quiz={quiz} />
     </main>
   );
 }
 
-const DEFAULT_COUNT = 35;
+const DEFAULT_COUNT = 15;
 
 const validateCount = (count?: string): "all" | number => {
   if (!count) return DEFAULT_COUNT;

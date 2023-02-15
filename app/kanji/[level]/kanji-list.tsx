@@ -26,24 +26,26 @@ export function KanjiList({
   const [activeKanji, setActiveKanji] = React.useState<Kanji | null>(list[0]);
   return (
     <main className="h-screen overflow-y-scroll mx-auto px-8 py-24 flex gap-20 justify-center">
-      <motion.ul
-        layout
-        className={cn(
-          "sticky -top-8 self-start",
-          activeKanji ? "w-[150px]" : "w-[250px]"
-        )}
-      >
-        {levels.map((_level) => {
-          return (
-            <motion.li layout key={_level}>
-              <LevelLink
-                level={_level}
-                active={String(level) === _level.at(1)}
-              />
-            </motion.li>
-          );
-        })}
-      </motion.ul>
+      <div className="sticky -top-8 self-start w-[150px] space-y-6">
+        <Link
+          href={`/kanji/quiz?level=${level}`}
+          className="block w-full text-center border rounded-md border-gray4 p-2 bg-gray2 text-sm font-bold hover:bg-gray4"
+        >
+          Start Quiz
+        </Link>
+        <ul>
+          {levels.map((_level) => {
+            return (
+              <li key={_level}>
+                <LevelLink
+                  level={_level}
+                  active={String(level) === _level.at(1)}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       <motion.div layout>
         <motion.ul className="flex flex-wrap gap-6 col-start-2 w-[816px]">
           {list.map((kanji) => {
@@ -99,12 +101,18 @@ const LevelLink = ({
       </span>
       <span
         className={cn(
+          "w-4 aspect-square block ml-auto relative",
+          active ? "bg-gray2" : "bg-gray1"
+        )}
+      />
+      {/* <span
+        className={cn(
           "ml-auto relative px-4",
           active ? "bg-gray2 text-gray12" : "bg-gray1 text-gray10"
         )}
       >
         50%
-      </span>
+      </span> */}
     </Link>
   );
 };
