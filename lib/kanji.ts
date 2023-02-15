@@ -1,7 +1,8 @@
 import { KanjiDic } from "@/data/types";
-import { client, kanji } from "./supabase";
+import { createServerClient, kanji } from "./supabase/server";
 
 export type Kanji = {
+  id: number;
   literal: string;
   jlpt: number;
   meanings: string[];
@@ -25,10 +26,23 @@ export async function getKanjiByLevelAndCount(
   if (count === "all") {
     response = await kanji().select().eq("jlpt", level);
   } else {
-    response = await client.rpc("get_random_kanji", {
+    response = await createServerClient().rpc("get_random_kanji", {
       level,
       max_count: count,
     });
   }
   return response.data as Kanji[];
+}
+
+export async function getKanjiFromIds(ids: number[]): Promise<Kanji[]> {
+  const client = createServerClient();
+  const { data } = await client.from("kanji").select().in("id", ids);
+  if (!data) return [];
+
+  const inOrder = [];
+  for (const id of ids) {
+    const kanji = data.find((k) => k.id === id);
+    if (kanji) inOrder.push(kanji);
+  }
+  return inOrder;
 }

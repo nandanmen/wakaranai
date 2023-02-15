@@ -7,7 +7,12 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/vocab",
+        destination: "/kanji/5",
+        permanent: false,
+      },
+      {
+        source: "/kanji",
+        destination: "/kanji/5",
         permanent: false,
       },
     ];

@@ -1,5 +1,5 @@
 import { JMdictWord } from "@/data/types";
-import { client, words } from "./supabase";
+import { createServerClient, words } from "./supabase/server";
 
 export type Word = {
   literal: string;
@@ -22,7 +22,7 @@ export async function getWords(limit: number, from = 0): Promise<Word[]> {
 }
 
 export async function getRandomWords(limit: number): Promise<Word[]> {
-  const response = await client.rpc("get_random_words", {
+  const response = await createServerClient().rpc("get_random_words", {
     level: 5,
     max_count: limit,
   });

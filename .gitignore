@@ -34,3 +34,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+pages/api/sign-in.ts
+pages/api/sync-words.ts
+data/jmdict-furigana.json
+data/jmdict.json
+data/kanjidic.json
+data/kanji.json

@@ -15,11 +15,11 @@ export const ProgressBar = ({
   return (
     <motion.div
       layout
-      className="w-full flex h-[6px] dark:bg-neutral-900 bg-neutral-300 rounded-full overflow-hidden relative"
+      className="w-full flex h-[8px] bg-gray3 rounded-full overflow-hidden relative"
     >
       <motion.div
         layout
-        className="dark:bg-white bg-neutral-900 h-full"
+        className="bg-white h-full"
         animate={{ width: `${value * 100}%` }}
         transition={{ type: "spring", damping: 20 }}
       />
@@ -30,7 +30,7 @@ export const ProgressBar = ({
           <motion.div
             layout
             key={pos}
-            className="absolute h-full w-[2px] dark:bg-black bg-white"
+            className="absolute h-full w-[2px] bg-gray1"
             style={{ left: `${pos}%` }}
           />
         );
