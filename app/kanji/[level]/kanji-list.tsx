@@ -28,7 +28,7 @@ export function KanjiList({
     <main className="h-screen overflow-y-scroll mx-auto px-8 py-24 flex gap-20 justify-center">
       <div className="sticky -top-8 self-start w-[150px] space-y-6">
         <Link
-          href={`/kanji/quiz?level=${level}`}
+          href={`/kanji/${level}/quiz`}
           className="block w-full text-center border rounded-md border-gray4 p-2 bg-gray2 text-sm font-bold hover:bg-gray4"
         >
           Start Quiz

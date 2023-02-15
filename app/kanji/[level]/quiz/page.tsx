@@ -1,9 +1,9 @@
 import { getOrCreateQuiz, type QuizLevel } from "@/lib/quiz";
 import { Quiz } from "./quiz";
 
-export default async function QuizPage({ searchParams }: any) {
+export default async function QuizPage({ params, searchParams }: any) {
   const quiz = await getOrCreateQuiz(
-    validateLevel(searchParams.level),
+    validateLevel(params.level),
     validateCount(searchParams.count)
   );
   return (
