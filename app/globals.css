@@ -18,7 +18,6 @@
 }
 
 * {
-  @apply text-gray12;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -30,11 +29,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  @apply text-gray12;
 }
 
 a {

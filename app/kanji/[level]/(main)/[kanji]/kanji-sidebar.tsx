@@ -1,40 +1,18 @@
+"use client";
+
 import React from "react";
 import type { Kanji } from "@/lib/kanji";
 import { motion } from "framer-motion";
 import Balancer from "react-wrap-balancer";
 import type { Word } from "@/lib/words";
 
-const cache = new Map<string, Word[]>();
-
-export const prefetchWordsForKanji = (kanji: string) => {
-  if (cache.has(kanji)) return;
-  getWordsForKanji(kanji).then((words) => cache.set(kanji, words));
-};
-
-export const getWordsForKanji = async (kanji: string) => {
-  if (cache.has(kanji)) {
-    return cache.get(kanji) as Word[];
-  }
-  const res = await fetch(`/api/words?kanji=${kanji}`);
-  if (!res.ok) throw new Error("Failed to fetch words");
-  const body = await res.json();
-  cache.set(kanji, body.data);
-  return body.data;
-};
-
-const useKanjiWords = (kanji: string) => {
-  const [words, setWords] = React.useState<Word[]>([]);
-
-  React.useEffect(() => {
-    getWordsForKanji(kanji).then((words) => setWords(words));
-  }, [kanji]);
-
-  return words;
-};
-
-export const KanjiSidebar = ({ kanji }: { kanji: Kanji }) => {
-  const words = useKanjiWords(kanji.literal);
-
+export const KanjiSidebar = ({
+  kanji,
+  words,
+}: {
+  kanji: Kanji;
+  words: Word[];
+}) => {
   const getWordOptions = () => {
     if (!words) return [];
 
@@ -50,12 +28,7 @@ export const KanjiSidebar = ({ kanji }: { kanji: Kanji }) => {
   };
 
   return (
-    <motion.aside
-      animate={{ opacity: 1, y: 0 }}
-      initial={{ opacity: 0, y: 16 }}
-      className="w-[350px] p-8 pb-4 bg-gray2 border border-gray4 h-fit rounded-lg sticky -top-8 self-start"
-      transition={{ type: "spring", damping: 20 }}
-    >
+    <aside className="w-[350px] p-8 pb-4 bg-gray2 border border-gray4 h-fit rounded-lg sticky -top-8 self-start">
       <div className="py-8 bg-gray3 border rounded-lg border-gray5 shadow-lg flex items-center justify-center text-[10rem] font-bold leading-none">
         {kanji.literal}
       </div>
@@ -103,6 +76,6 @@ export const KanjiSidebar = ({ kanji }: { kanji: Kanji }) => {
             );
           })}
       </ul>
-    </motion.aside>
+    </aside>
   );
 };

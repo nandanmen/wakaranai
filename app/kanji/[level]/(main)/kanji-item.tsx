@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import type { Kanji } from "@/lib/kanji";
+import Link from "next/link";
 
 export const KanjiItem = ({
   kanji,
@@ -11,10 +12,11 @@ export const KanjiItem = ({
 }: {
   kanji: Kanji;
   progress: number;
-} & React.ComponentPropsWithoutRef<"button">) => {
+} & Omit<React.ComponentPropsWithoutRef<typeof Link>, "href">) => {
   return (
     <li>
-      <button
+      <Link
+        href={`/kanji/${kanji.jlpt}/${kanji.literal}`}
         className="w-24 h-24 text-5xl font-bold rounded-md flex items-center justify-center bg-gray2 border border-gray4 shadow-md relative overflow-hidden hover:border-gray6 hover:bg-gradient-to-b hover:from-gray5 hover:to-gray3 focus:outline-none focus-visible:border-2 focus-visible:border-gray8"
         {...props}
       >
@@ -26,7 +28,7 @@ export const KanjiItem = ({
           transition={{ type: "spring", damping: 20 }}
         /> */}
         <span className="relative">{kanji.literal}</span>
-      </button>
+      </Link>
     </li>
   );
 };

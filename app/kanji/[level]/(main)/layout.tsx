@@ -1,29 +1,31 @@
-"use client";
-
 import React from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import cn from "classnames";
+import { getKanjiByLevel } from "@/lib/kanji";
 import { KanjiItem } from "./kanji-item";
-import { Kanji } from "@/lib/kanji";
-import { prefetchWordsForKanji, KanjiSidebar } from "./kanji-sidebar";
-
-export const getRandomNumber = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
 
 const levels = ["N5", "N4", "N3", "N2", "N1"];
 
-export function KanjiList({
-  list,
-  level,
-  progress,
+const getRandomNumber = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+export default async function KanjiLayout({
+  params,
+  children,
 }: {
-  list: Kanji[];
-  level: number;
-  progress: Record<string, number>;
+  params: { level: string };
+  children: React.ReactNode;
 }) {
-  const [activeKanji, setActiveKanji] = React.useState<Kanji | null>(list[0]);
+  const { level } = params;
+  const _level = Number(level);
+  const list = await getKanjiByLevel(_level);
+
+  const progress = {} as Record<string, number>;
+  list.map((kanji) => {
+    progress[kanji.literal] = getRandomNumber(0, 5) / 5;
+  });
+
   return (
     <main className="h-screen overflow-y-scroll mx-auto px-8 py-24 flex gap-20 justify-center">
       <div className="sticky -top-8 self-start w-[150px] space-y-6">
@@ -46,26 +48,21 @@ export function KanjiList({
           })}
         </ul>
       </div>
-      <motion.div layout>
-        <motion.ul className="flex flex-wrap gap-6 col-start-2 w-[816px]">
+      <div>
+        <ul className="flex flex-wrap gap-6 col-start-2 w-[816px]">
           {list.map((kanji) => {
             return (
               <KanjiItem
                 key={kanji.literal}
                 kanji={kanji}
                 progress={progress[kanji.literal]}
-                onClick={() => setActiveKanji(kanji)}
-                onMouseEnter={() => prefetchWordsForKanji(kanji.literal)}
-                onFocus={() => prefetchWordsForKanji(kanji.literal)}
               />
             );
           })}
-        </motion.ul>
+        </ul>
         <div className="h-24" />
-      </motion.div>
-      {activeKanji && (
-        <KanjiSidebar kanji={activeKanji} key={activeKanji.literal} />
-      )}
+      </div>
+      {children}
     </main>
   );
 }
@@ -81,22 +78,13 @@ const LevelLink = ({
     <Link
       href={`/kanji/${level.at(1)}`}
       className={cn(
-        "font-mono py-2 flex items-center relative rounded-lg",
-        active && "bg-gray2"
+        "font-mono py-2 flex items-center relative rounded-lg hover:text-gray12",
+        active && "bg-gray2",
+        active ? "text-gray12" : "text-gray8"
       )}
     >
-      <span
-        className={cn(
-          "absolute block h-px left-0 right-0",
-          active ? "bg-gray12" : "bg-gray2"
-        )}
-      />
-      <span
-        className={cn(
-          "relative px-4",
-          active ? "bg-gray2 text-gray12" : "bg-gray1 text-gray10"
-        )}
-      >
+      <span className="absolute block h-px left-0 right-0 bg-current" />
+      <span className={cn("relative px-4", active ? "bg-gray2" : "bg-gray1")}>
         {level}
       </span>
       <span
