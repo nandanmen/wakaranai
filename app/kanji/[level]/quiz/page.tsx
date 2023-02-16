@@ -1,6 +1,8 @@
 import { getOrCreateQuiz, type QuizLevel } from "@/lib/quiz";
 import { Quiz } from "./quiz";
 
+export const dynamic = "force-dynamic";
+
 export default async function QuizPage({ params, searchParams }: any) {
   const quiz = await getOrCreateQuiz(
     validateLevel(params.level),
