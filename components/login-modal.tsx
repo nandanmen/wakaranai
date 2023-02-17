@@ -4,12 +4,14 @@ import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSupabase } from "@/app/supabase";
 
 const Overlay = motion(Dialog.Overlay);
 
 const Content = motion(Dialog.Content);
 
 export function LoginModal() {
+  const { supabase } = useSupabase();
   const [isLogin, setIsLogin] = React.useState(true);
   const [state, setState] = React.useState<"idle" | "loading" | "success">(
     "idle"
@@ -51,94 +53,48 @@ export function LoginModal() {
             </TitleToggle>
           </Dialog.Title>
           <div className="-mx-10 px-10 overflow-hidden relative">
-            <AnimatePresence mode="popLayout">
-              {isLogin ? (
-                <motion.form
-                  key="login"
-                  initial={{ x: -400 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: -400 }}
-                  transition={{ type: "spring", damping: 20 }}
-                  className="w-full relative group overflow-hidden py-[1px] shrink-0"
-                  onSubmit={(evt) => {
-                    evt.preventDefault();
-                    submit();
-                  }}
-                >
-                  <label
-                    htmlFor="login-email"
-                    className="text-gray10 text-sm mb-2 block"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="login-email"
-                    type="email"
-                    className="block w-full p-2 border rounded-[4px] border-gray6 placeholder:text-gray8 focus:outline-gray10 disabled:text-gray8 mb-4 bg-gray2"
-                    placeholder="john@example.com"
-                    disabled={state === "loading"}
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.div
+                key={isLogin ? "login" : "signup"}
+                initial={{ x: isLogin ? -400 : 400 }}
+                animate={{ x: 0 }}
+                exit={{ x: isLogin ? -400 : 400 }}
+                transition={{ type: "spring", damping: 30, stiffness: 250 }}
+              >
+                {isLogin ? (
+                  <Form
+                    isLogin
+                    state={state}
+                    onSubmit={async ({ email, password }) => {
+                      setState("loading");
+                      const { error } = await supabase.auth.signInWithPassword({
+                        email,
+                        password,
+                      });
+                      if (error) {
+                        console.error(error);
+                      }
+                      setState("success");
+                    }}
                   />
-                  <label
-                    htmlFor="login-password"
-                    className="text-gray10 text-sm mb-2 block"
-                  >
-                    Password
-                  </label>
-                  <input
-                    id="login-password"
-                    type="password"
-                    className="block w-full p-2 border rounded-[4px] border-gray6 placeholder:text-gray8 focus:outline-gray10 disabled:text-gray8 mb-6 bg-gray2"
-                    placeholder="john1234"
-                    disabled={state === "loading"}
+                ) : (
+                  <Form
+                    isLogin={false}
+                    state={state}
+                    onSubmit={async ({ email, password }) => {
+                      setState("loading");
+                      const { error } = await supabase.auth.signUp({
+                        email,
+                        password,
+                      });
+                      if (error) {
+                        console.error(error);
+                      }
+                      setState("success");
+                    }}
                   />
-                  <button className="block bg-gray4 w-full p-2 border border-gray6 rounded-[4px] text-gray11 text-sm focus:outline-gray10">
-                    Login
-                  </button>
-                </motion.form>
-              ) : (
-                <motion.form
-                  key="signup"
-                  initial={{ x: 400 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: 400 }}
-                  transition={{ type: "spring", damping: 20 }}
-                  className="w-full relative group overflow-hidden py-[1px] shrink-0"
-                  onSubmit={(evt) => {
-                    evt.preventDefault();
-                    submit();
-                  }}
-                >
-                  <label
-                    htmlFor="login-email"
-                    className="text-gray10 text-sm mb-2 block"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="login-email"
-                    type="email"
-                    className="block w-full p-2 border rounded-[4px] border-gray6 placeholder:text-gray8 focus:outline-gray10 disabled:text-gray8 mb-4 bg-gray2"
-                    placeholder="john@example.com"
-                    disabled={state === "loading"}
-                  />
-                  <label
-                    htmlFor="login-password"
-                    className="text-gray10 text-sm mb-2 block"
-                  >
-                    Password
-                  </label>
-                  <input
-                    id="login-password"
-                    type="password"
-                    className="block w-full p-2 border rounded-[4px] border-gray6 placeholder:text-gray8 focus:outline-gray10 disabled:text-gray8 mb-6 bg-gray2"
-                    placeholder="john1234"
-                    disabled={state === "loading"}
-                  />
-                  <button className="block bg-gray4 w-full p-2 border border-gray6 rounded-[4px] text-gray11 text-sm focus:outline-gray10">
-                    Sign up
-                  </button>
-                </motion.form>
-              )}
+                )}
+              </motion.div>
             </AnimatePresence>
           </div>
           <Dialog.Close asChild>
@@ -170,5 +126,64 @@ const TitleToggle = ({
     >
       {children}
     </button>
+  );
+};
+
+const Form = ({
+  isLogin,
+  state,
+  onSubmit,
+}: {
+  isLogin: boolean;
+  state: "idle" | "loading" | "success";
+  onSubmit: ({ email, password }: { email: string; password: string }) => void;
+}) => {
+  return (
+    <form
+      className="w-full relative group overflow-hidden py-[1px] shrink-0"
+      onSubmit={async (evt) => {
+        evt.preventDefault();
+        const form = evt.target as HTMLFormElement;
+        const emailInput = form.elements.namedItem("email") as HTMLInputElement;
+        const passwordInput = form.elements.namedItem(
+          "password"
+        ) as HTMLInputElement;
+        onSubmit({ email: emailInput.value, password: passwordInput.value });
+      }}
+    >
+      <label
+        htmlFor={`${isLogin ? "login" : "signup"}-email`}
+        className="text-gray10 text-sm mb-2 block"
+      >
+        Email
+      </label>
+      <input
+        id={`${isLogin ? "login" : "signup"}-email`}
+        type="email"
+        name="email"
+        className="block w-full p-2 border rounded-[4px] border-gray6 placeholder:text-gray8 focus:outline-gray10 disabled:text-gray8 mb-4 bg-gray2"
+        placeholder="john@example.com"
+        disabled={state === "loading"}
+        autoComplete="email"
+      />
+      <label
+        htmlFor={`${isLogin ? "login" : "signup"}-password`}
+        className="text-gray10 text-sm mb-2 block"
+      >
+        Password
+      </label>
+      <input
+        id={`${isLogin ? "login" : "signup"}-password`}
+        type="password"
+        name="password"
+        className="block w-full p-2 border rounded-[4px] border-gray6 placeholder:text-gray8 focus:outline-gray10 disabled:text-gray8 mb-6 bg-gray2"
+        placeholder="john1234"
+        disabled={state === "loading"}
+        autoComplete={isLogin ? "current-password" : "new-password"}
+      />
+      <button className="block bg-gray4 w-full p-2 border border-gray6 rounded-[4px] text-gray11 text-sm focus:outline-gray10">
+        {isLogin ? "Login" : "Sign up"}
+      </button>
+    </form>
   );
 };

@@ -23,7 +23,6 @@ const shouldIncrement = (result: Result) => {
 };
 
 export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
-  const { supabase } = useSupabase();
   const [current, setCurrent] = React.useState(0);
   const [results, setResults] = React.useState<
     Array<Result & { kanjiId: number }>
@@ -71,7 +70,7 @@ export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
               setList([...list, list[current]]);
             }
             if (isLast) {
-              alert("youre done!");
+              router.push(`/kanji/${level}`);
             } else {
               setCurrent(current + 1);
             }
@@ -122,6 +121,7 @@ const KanjiForm = ({
   reviewing: boolean;
   onSubmit: (result: Result, kanjiId: number) => void;
 }) => {
+  const { session } = useSupabase();
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
   const [result, setResult] = React.useState<Result | null>(null);
@@ -296,17 +296,19 @@ const KanjiForm = ({
         )}
       </div>
       <div className="flex">
-        <Root>
-          <p className="text-sm text-gray10">
-            <Trigger asChild>
-              <button className="underline hover:text-gray12 focus:outline-none focus-visible:text-gray12">
-                Login
-              </button>
-            </Trigger>
-            {` `} to save your progress
-          </p>
-          <LoginModal />
-        </Root>
+        {!session && (
+          <Root>
+            <p className="text-sm text-gray10">
+              <Trigger asChild>
+                <button className="underline hover:text-gray12 focus:outline-none focus-visible:text-gray12">
+                  Login
+                </button>
+              </Trigger>
+              {` `} to save your progress
+            </p>
+            <LoginModal />
+          </Root>
+        )}
         <motion.button
           layout
           className="ml-auto px-4 py-2 rounded-md border border-gray4"
