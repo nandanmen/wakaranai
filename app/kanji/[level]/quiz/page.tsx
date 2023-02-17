@@ -1,21 +1,19 @@
-import { getOrCreateQuiz, type QuizLevel } from "@/lib/quiz";
+import { getQuiz, type QuizLevel } from "@/lib/quiz";
 import { Quiz } from "./quiz";
 
 export const dynamic = "force-dynamic";
 
 export default async function QuizPage({ params, searchParams }: any) {
-  const quiz = await getOrCreateQuiz(
-    validateLevel(params.level),
-    validateCount(searchParams.count)
-  );
+  const level = validateLevel(params.level);
+  const quiz = await getQuiz(level, validateCount(searchParams.count));
   return (
     <main className="min-h-screen">
-      <Quiz quiz={quiz} />
+      <Quiz quiz={quiz} level={level} />
     </main>
   );
 }
 
-const DEFAULT_COUNT = 15;
+const DEFAULT_COUNT = 3;
 
 const validateCount = (count?: string): "all" | number => {
   if (!count) return DEFAULT_COUNT;

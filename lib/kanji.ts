@@ -52,15 +52,3 @@ export async function getKanjiByLevelAndCount(
   }
   return response.data as Kanji[];
 }
-
-export async function getKanjiFromIds(ids: number[]): Promise<Kanji[]> {
-  const { data } = await kanji().select().in("id", ids);
-  if (!data) return [];
-
-  const inOrder = [];
-  for (const id of ids) {
-    const kanji = data.find((k) => k.id === id);
-    if (kanji) inOrder.push(kanji);
-  }
-  return inOrder;
-}
