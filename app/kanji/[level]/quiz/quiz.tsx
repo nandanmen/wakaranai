@@ -8,51 +8,69 @@ import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
 import { Kanji } from "@/lib/kanji";
-import type { KanjiQuiz } from "@/lib/quiz";
 import { Root, Trigger } from "@radix-ui/react-dialog";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toHiragana } from "wanakana";
 
 const JP_DELIMITER = `.`;
 
-export const Quiz = ({ quiz }: { quiz: KanjiQuiz }) => {
-  const { supabase } = useSupabase();
+const shouldIncrement = (result: Result) => {
+  return result.reading.type === "correct" && result.meaning.type === "correct";
+};
+
+export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
   const [current, setCurrent] = React.useState(0);
-  const [results, setResults] = React.useState<Result[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const [results, setResults] = React.useState<
+    Array<Result & { kanjiId: number }>
+  >([]);
+  const [list, setList] = React.useState(quiz);
   const router = useRouter();
 
-  const list = quiz.questions;
-  const isLast = current === list.length - 1;
-
   React.useEffect(() => {
-    async function saveResults() {
-      await supabase
-        .from("quizzes")
-        .update({ progress: results })
-        .eq("id", quiz.quizId);
+    const lastResult = results.at(-1);
+    if (lastResult) {
+      fetch("/api/proficiency", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          kanjiId: lastResult.kanjiId,
+          increment: shouldIncrement(lastResult),
+        }),
+      });
     }
-    saveResults();
-  }, [results, supabase, quiz.quizId]);
+  }, [results]);
 
+  const isLast = current === list.length - 1;
   return (
     <div className="w-fit mx-auto h-full">
-      <div className="flex flex-col justify-center h-screen">
-        <ProgressBar value={(current + 1) / list.length} steps={list.length} />
+      <Link
+        href={`/kanji/${level}`}
+        className="flex items-center gap-2 text-gray9 fixed top-12 hover:text-gray12"
+      >
+        <ArrowLeftIcon width="20" height="20" />
+        <span>Home</span>
+      </Link>
+      <div className="flex flex-col justify-center h-screen gap-6">
+        <ProgressBar value={(current + 1) / quiz.length} steps={quiz.length} />
         <KanjiForm
-          loading={loading}
+          reviewing={current >= quiz.length}
           kanji={list[current]}
-          onSubmit={async (result) => {
-            setResults([...results, result]);
+          onSubmit={async (result, kanjiId) => {
+            setResults([...results, { ...result, kanjiId }]);
+            if (
+              result.reading.type !== "correct" ||
+              result.meaning.type !== "correct"
+            ) {
+              setList([...list, list[current]]);
+            }
             if (isLast) {
-              setLoading(true);
-              await supabase
-                .from("quizzes")
-                .update({ completed_at: new Date() })
-                .eq("id", quiz.quizId);
-              router.push(`/results/${quiz.quizId}`);
+              router.push(`/kanji/${level}`);
             } else {
               setCurrent(current + 1);
             }
@@ -96,13 +114,14 @@ const calculateAnswer = (form: HTMLFormElement, kanji: Kanji): Result => {
 
 const KanjiForm = ({
   kanji,
-  loading,
+  reviewing,
   onSubmit,
 }: {
   kanji: Kanji;
-  loading: boolean;
-  onSubmit: (result: Result) => void;
+  reviewing: boolean;
+  onSubmit: (result: Result, kanjiId: number) => void;
 }) => {
+  const { session } = useSupabase();
   const formRef = React.useRef<HTMLFormElement>(null);
   const [submitted, setSubmitted] = React.useState(false);
   const [result, setResult] = React.useState<Result | null>(null);
@@ -118,8 +137,8 @@ const KanjiForm = ({
       ) as HTMLInputElement;
       readingInput?.focus();
     }
-    onSubmit(result as Result);
-  }, [onSubmit, result]);
+    onSubmit(result as Result, kanji.id);
+  }, [onSubmit, result, kanji]);
 
   const handleSubmit = React.useCallback(() => {
     setSubmitted(true);
@@ -170,7 +189,7 @@ const KanjiForm = ({
 
   return (
     <>
-      <div className="flex my-6 shadow-lg">
+      <div className="flex shadow-lg relative">
         <div className="text-[18rem] font-bold bg-gradient-to-br from-gray3 to-gray1 p-16 overflow-hidden relative rounded-l-lg border border-gray4">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.h1
@@ -199,11 +218,7 @@ const KanjiForm = ({
             }}
           >
             <div className="mb-8 relative">
-              <FormInput
-                label="Reading"
-                type={result?.reading.type}
-                disabled={loading}
-              />
+              <FormInput label="Reading" type={result?.reading.type} />
               <AnimatePresence>
                 {result?.reading.type === "incorrect" && (
                   <div className="absolute -right-12 top-7 translate-x-1/2 translate-y-[3px]">
@@ -243,11 +258,7 @@ const KanjiForm = ({
               )}
             </div>
             <div className="relative">
-              <FormInput
-                label="Meaning"
-                type={result?.meaning.type}
-                disabled={loading}
-              />
+              <FormInput label="Meaning" type={result?.meaning.type} />
               <AnimatePresence>
                 {result?.meaning.type === "incorrect" && (
                   <div className="absolute -right-12 top-7 translate-x-1/2 translate-y-[3px]">
@@ -273,19 +284,31 @@ const KanjiForm = ({
             </div>
           </form>
         </div>
+        {reviewing && (
+          <motion.p
+            animate={{ x: 0, opacity: 1 }}
+            initial={{ x: -16, opacity: 0 }}
+            transition={{ type: "spring", damping: 20 }}
+            className="absolute top-4 -left-3 bg-gray2 border rounded-[4px] p-3 border-gray6 shadow-sm text-sm text-gray11"
+          >
+            {`Reviewing terms you've missed`}
+          </motion.p>
+        )}
       </div>
       <div className="flex">
-        {/* <Root>
-          <p className="text-sm text-neutral-600">
-            <Trigger asChild>
-              <button className="underline hover:text-white focus:outline-none focus-visible:text-white">
-                Login
-              </button>
-            </Trigger>
-            {` `} to save your progress
-          </p>
-          <LoginModal />
-        </Root> */}
+        {!session && (
+          <Root>
+            <p className="text-sm text-gray10">
+              <Trigger asChild>
+                <button className="underline hover:text-gray12 focus:outline-none focus-visible:text-gray12">
+                  Login
+                </button>
+              </Trigger>
+              {` `} to save your progress
+            </p>
+            <LoginModal />
+          </Root>
+        )}
         <motion.button
           layout
           className="ml-auto px-4 py-2 rounded-md border border-gray4"
