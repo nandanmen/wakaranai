@@ -33,12 +33,15 @@ export type WordV2Response = WordV2 & {
   created_at: string;
 };
 
-export async function getVariations(kanji: string): Promise<WordV2Response[]> {
+export async function getVariations(
+  kanji: string,
+  level = 5
+): Promise<WordV2Response[]> {
   const client = createServerClient();
   const { data } = await client
     .from("words-v2")
     .select()
     .like("literal", `%${kanji}%`)
-    .not("jlpt", "in", "(1, 2)");
+    .eq("jlpt", level);
   return data as WordV2Response[];
 }

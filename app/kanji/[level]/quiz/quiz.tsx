@@ -67,12 +67,12 @@ export const Quiz = ({
 }) => {
   const [current, setCurrent] = React.useState(0);
   const [results, setResults] = React.useState<
-    Array<Result & { kanjiId: number }>
+    Array<Result & { wordId: number }>
   >([]);
   const [list, setList] = React.useState(quiz);
   const router = useRouter();
 
-  /* React.useEffect(() => {
+  React.useEffect(() => {
     const lastResult = results.at(-1);
     if (lastResult) {
       fetch("/api/proficiency", {
@@ -81,12 +81,12 @@ export const Quiz = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          kanjiId: lastResult.kanjiId,
+          wordId: lastResult.wordId,
           increment: shouldIncrement(lastResult),
         }),
       });
     }
-  }, [results]); */
+  }, [results]);
 
   const isLast = current === list.length - 1;
   return (
@@ -104,8 +104,8 @@ export const Quiz = ({
           reviewing={current >= quiz.length}
           word={list[current]}
           index={current}
-          onSubmit={async (result, kanjiId) => {
-            setResults([...results, { ...result, kanjiId }]);
+          onSubmit={async (result, wordId) => {
+            setResults([...results, { ...result, wordId }]);
             if (
               result.reading.type !== "correct" ||
               result.meaning.type !== "correct"
@@ -243,7 +243,7 @@ const QuizForm = ({
   return (
     <>
       <div className="flex shadow-lg relative">
-        <div className="w-[1000px] h-[600px] font-bold bg-gradient-to-br from-gray3 to-gray1 overflow-hidden relative rounded-l-lg border border-gray4 flex items-center justify-center">
+        <div className="w-[800px] h-[600px] font-bold bg-gradient-to-br from-gray3 to-gray1 overflow-hidden relative rounded-l-lg border border-gray4 flex items-center justify-center">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={word.literal + index}
@@ -326,7 +326,7 @@ const QuizForm = ({
                           .map((m) => m.texts)
                           .flatMap((text) => text.flatMap((t) => t.split(",")))
                       )
-                      .slice(0, 5)
+                      .slice(0, 15)
                       .join(", ")}
                   </p>
                 </motion.div>

@@ -1,7 +1,6 @@
-export interface KanjiProficiency {
+export interface Proficiency {
   user_id: string;
-  kanji_id: number;
+  word_id: number;
   proficiency: number;
   updated_at: string;
-  created_at: string;
 }

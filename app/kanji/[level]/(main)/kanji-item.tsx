@@ -8,9 +8,11 @@ import { useSupabase } from "@/app/supabase";
 
 export const KanjiItem = ({
   kanji,
+  level,
   ...props
 }: {
   kanji: Kanji;
+  level: number;
 } & Omit<React.ComponentPropsWithoutRef<typeof Link>, "href">) => {
   const { supabase, session } = useSupabase();
   const [proficiency, setProficiency] = React.useState(0);
@@ -20,19 +22,10 @@ export const KanjiItem = ({
       setProficiency(0);
       return;
     }
-    supabase
-      .from("kanji_proficiency")
-      .select()
-      .eq("kanji_id", kanji.id)
-      .eq("user_id", session.user.id)
-      .single()
-      .then(({ data }) => {
-        if (!data) return;
-        const { proficiency } = data;
-        if (!proficiency) return;
-        setProficiency(proficiency / 4);
-      });
-  }, [session, supabase, kanji.id]);
+    fetch(`/api/proficiency/kanji/${kanji.literal}?level=${level}`)
+      .then((res) => res.json())
+      .then(({ proficiency }) => setProficiency(proficiency / 3));
+  }, [session, level, kanji.literal]);
 
   return (
     <li>
