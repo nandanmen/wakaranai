@@ -1,4 +1,4 @@
-import { createServerClient } from "./supabase/server";
+import { supabase } from "./supabase/public";
 
 type Tag = string;
 
@@ -37,8 +37,7 @@ export async function getVariations(
   kanji: string,
   level = 5
 ): Promise<WordV2Response[]> {
-  const client = createServerClient();
-  const { data } = await client
+  const { data } = await supabase
     .from("words")
     .select()
     .like("literal", `%${kanji}%`)
