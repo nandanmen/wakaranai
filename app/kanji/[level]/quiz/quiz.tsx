@@ -7,7 +7,7 @@ import { MarkCorrectButton } from "@/components/quiz/mark-correct-button";
 import { ProgressBar } from "@/components/quiz/progress-bar";
 import type { Result } from "@/components/quiz/types";
 import { getInputAnswer } from "@/components/quiz/utils";
-import { Kanji } from "@/lib/kanji";
+import { WordV2Response } from "@/lib/words-v2";
 import { Root, Trigger } from "@radix-ui/react-dialog";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
@@ -22,7 +22,49 @@ const shouldIncrement = (result: Result) => {
   return result.reading.type === "correct" && result.meaning.type === "correct";
 };
 
-export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
+const PhraseText = ({
+  phrase,
+  showReading = false,
+}: {
+  phrase: WordV2Response;
+  showReading?: boolean;
+}) => {
+  const { parts } = phrase.senses[0];
+  if (parts.length === 0) {
+    return <h1>{phrase.literal}</h1>;
+  }
+  return (
+    <div className="flex">
+      {parts.map((part) => {
+        return (
+          <div key={part.literal} className="relative">
+            {showReading && (
+              <motion.div
+                animate={{ y: 0, opacity: 1 }}
+                initial={{ y: 16, opacity: 0 }}
+                transition={{ type: "spring", damping: 20 }}
+                className="text-[3rem] w-full text-center absolute -top-[1.5em] whitespace-nowrap"
+              >
+                {part.reading}
+              </motion.div>
+            )}
+            <motion.h1 layout="position" className="leading-none">
+              {part.literal}
+            </motion.h1>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export const Quiz = ({
+  level,
+  quiz,
+}: {
+  quiz: WordV2Response[];
+  level: number;
+}) => {
   const [current, setCurrent] = React.useState(0);
   const [results, setResults] = React.useState<
     Array<Result & { kanjiId: number }>
@@ -30,7 +72,7 @@ export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
   const [list, setList] = React.useState(quiz);
   const router = useRouter();
 
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     const lastResult = results.at(-1);
     if (lastResult) {
       fetch("/api/proficiency", {
@@ -44,7 +86,7 @@ export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
         }),
       });
     }
-  }, [results]);
+  }, [results]); */
 
   const isLast = current === list.length - 1;
   return (
@@ -58,9 +100,9 @@ export const Quiz = ({ level, quiz }: { quiz: Kanji[]; level: number }) => {
       </Link>
       <div className="flex flex-col justify-center h-screen gap-6">
         <ProgressBar value={(current + 1) / quiz.length} steps={quiz.length} />
-        <KanjiForm
+        <QuizForm
           reviewing={current >= quiz.length}
-          kanji={list[current]}
+          word={list[current]}
           onSubmit={async (result, kanjiId) => {
             setResults([...results, { ...result, kanjiId }]);
             if (
@@ -89,22 +131,28 @@ const isJapaneseReadingCorrect = (reading: string, input: string) => {
   return toHiragana(_reading) === toHiragana(input);
 };
 
-const calculateAnswer = (form: HTMLFormElement, kanji: Kanji): Result => {
+const IN_PARENS = /\(.*\)/g;
+
+const calculateAnswer = (
+  form: HTMLFormElement,
+  word: WordV2Response
+): Result => {
   const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
   const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
   const readingAnswer = getInputAnswer(readingInput, (value) => {
-    const kunReadingCorrect = kanji.readings.kun.some((reading) =>
-      isJapaneseReadingCorrect(reading, value)
-    );
-    const onReadingCorrect = kanji.readings.on.some((reading) =>
-      isJapaneseReadingCorrect(reading, value)
-    );
-    return kunReadingCorrect || onReadingCorrect;
+    return word.senses.some((sense) => {
+      return sense.readings.some((reading) =>
+        isJapaneseReadingCorrect(reading, value)
+      );
+    });
   });
   const meaningAnswer = getInputAnswer(meaningInput, (value) => {
-    return kanji.meanings.some(
-      (meaning) => meaning.toLowerCase() === value.toLowerCase()
-    );
+    return word.senses.some((sense) => {
+      const meanings = sense.meanings.flatMap((m) => m.texts);
+      return meanings
+        .map((m) => m.replaceAll(IN_PARENS, "").trim())
+        .some((meaning) => meaning.toLowerCase() === value.toLowerCase());
+    });
   });
   return {
     reading: readingAnswer,
@@ -112,14 +160,14 @@ const calculateAnswer = (form: HTMLFormElement, kanji: Kanji): Result => {
   };
 };
 
-const KanjiForm = ({
-  kanji,
+const QuizForm = ({
+  word,
   reviewing,
   onSubmit,
 }: {
-  kanji: Kanji;
+  word: WordV2Response;
   reviewing: boolean;
-  onSubmit: (result: Result, kanjiId: number) => void;
+  onSubmit: (result: Result, wordId: number) => void;
 }) => {
   const { session } = useSupabase();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -137,17 +185,17 @@ const KanjiForm = ({
       ) as HTMLInputElement;
       readingInput?.focus();
     }
-    onSubmit(result as Result, kanji.id);
-  }, [onSubmit, result, kanji]);
+    onSubmit(result as Result, word.id);
+  }, [onSubmit, result, word.id]);
 
   const handleSubmit = React.useCallback(() => {
     setSubmitted(true);
     const form = formRef.current;
     if (form) {
-      const result = calculateAnswer(form, kanji);
+      const result = calculateAnswer(form, word);
       setResult(result);
     }
-  }, [kanji]);
+  }, [word]);
 
   React.useEffect(() => {
     const handleEnter = (evt: KeyboardEvent) => {
@@ -190,18 +238,18 @@ const KanjiForm = ({
   return (
     <>
       <div className="flex shadow-lg relative">
-        <div className="text-[18rem] font-bold bg-gradient-to-br from-gray3 to-gray1 p-16 overflow-hidden relative rounded-l-lg border border-gray4">
+        <div className="w-[600px] font-bold bg-gradient-to-br from-gray3 to-gray1 overflow-hidden relative rounded-l-lg border border-gray4 flex items-center justify-center">
           <AnimatePresence mode="popLayout" initial={false}>
-            <motion.h1
-              key={kanji.literal}
-              initial={{ x: 400 }}
+            <motion.div
+              key={word.literal}
+              initial={{ x: 600 }}
               animate={{ x: 0 }}
-              exit={{ x: -400 }}
+              exit={{ x: -600 }}
               transition={{ type: "spring", damping: 20 }}
-              className="text-gray12"
+              className="text-gray12 text-[8rem]"
             >
-              {kanji.literal}
-            </motion.h1>
+              <PhraseText phrase={word} showReading={submitted} />
+            </motion.div>
           </AnimatePresence>
         </div>
         <div className="p-12 bg-gray2 flex items-center rounded-r-lg border border-gray4 border-l-0">
@@ -227,33 +275,20 @@ const KanjiForm = ({
                 )}
               </AnimatePresence>
               {submitted && (
-                <motion.div className="mt-2" animate="show" initial="hidden">
-                  <motion.p
-                    variants={{
-                      show: { y: 0, opacity: 1 },
-                      hidden: { y: -16, opacity: 0 },
-                    }}
-                    transition={{ type: "spring", damping: 20, delay: 0.3 }}
-                    className="flex"
-                  >
-                    <span className="w-[60px] text-sm mr-2 font-mono text-neutral-500 translate-y-[2px]">
-                      Kunyomi
-                    </span>{" "}
-                    {kanji.readings.kun.join(", ")}
-                  </motion.p>
-                  <motion.p
-                    variants={{
-                      show: { y: 0, opacity: 1 },
-                      hidden: { y: -16, opacity: 0 },
-                    }}
-                    transition={{ type: "spring", damping: 20, delay: 0.3 }}
-                    className="flex items-center"
-                  >
-                    <span className="w-[60px] text-sm mr-2 font-mono text-neutral-500">
-                      Onyomi
-                    </span>{" "}
-                    {kanji.readings.on.join(", ")}
-                  </motion.p>
+                <motion.div
+                  className="text-sm mt-3"
+                  animate="show"
+                  initial="hidden"
+                  variants={{
+                    show: { y: 0, opacity: 1 },
+                    hidden: { y: -16, opacity: 0 },
+                  }}
+                  transition={{ type: "spring", damping: 20, delay: 0.3 }}
+                >
+                  <p className="font-mono text-neutral-500 mb-1">Readings</p>
+                  <p>
+                    {word.senses.flatMap((sense) => sense.readings).join(", ")}
+                  </p>
                 </motion.div>
               )}
             </div>
@@ -278,7 +313,17 @@ const KanjiForm = ({
                   transition={{ type: "spring", damping: 20, delay: 0.3 }}
                 >
                   <p className="font-mono text-neutral-500 mb-1">Meanings</p>
-                  <p>{kanji.meanings.join(", ")}</p>
+                  <p>
+                    {word.senses
+                      .flatMap((sense) =>
+                        sense.meanings
+                          .filter((m) => !m.tags.includes("col"))
+                          .map((m) => m.texts)
+                          .flatMap((text) => text.flatMap((t) => t.split(",")))
+                      )
+                      .slice(0, 5)
+                      .join(", ")}
+                  </p>
                 </motion.div>
               )}
             </div>

@@ -3,7 +3,7 @@ import { createServerClient, words } from "./supabase/server";
 
 export type Word = {
   literal: string;
-  reading: string;
+  readings: string[];
   meanings: {
     texts: string[];
     partsOfSpeech: string[];
@@ -13,7 +13,7 @@ export type Word = {
     reading?: string;
   }[];
   jlpt: number;
-  jmdict: JMdictWord;
+  source: JMdictWord;
 };
 
 export async function getWords(limit: number, from = 0): Promise<Word[]> {
