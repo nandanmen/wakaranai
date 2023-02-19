@@ -39,7 +39,7 @@ export async function getVariations(
 ): Promise<WordV2Response[]> {
   const client = createServerClient();
   const { data } = await client
-    .from("words-v2")
+    .from("words")
     .select()
     .like("literal", `%${kanji}%`)
     .eq("jlpt", level);

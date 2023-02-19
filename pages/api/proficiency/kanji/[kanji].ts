@@ -20,7 +20,7 @@ export default async function handler(
   }
 
   const { data } = await client
-    .from("words-v2")
+    .from("words")
     .select("id")
     .like("literal", `%${kanji}%`)
     .eq("jlpt", Number(level));

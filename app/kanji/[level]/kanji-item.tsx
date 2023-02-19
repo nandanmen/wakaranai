@@ -3,7 +3,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import type { Kanji } from "@/lib/kanji";
-import Link from "next/link";
 import { useSupabase } from "@/app/supabase";
 
 export const KanjiItem = ({
@@ -13,7 +12,7 @@ export const KanjiItem = ({
 }: {
   kanji: Kanji;
   level: number;
-} & Omit<React.ComponentPropsWithoutRef<typeof Link>, "href">) => {
+} & Omit<React.ComponentPropsWithoutRef<"button">, "href">) => {
   const { supabase, session } = useSupabase();
   const [proficiency, setProficiency] = React.useState(0);
 
@@ -29,8 +28,7 @@ export const KanjiItem = ({
 
   return (
     <li>
-      <Link
-        href={`/kanji/${kanji.jlpt}/${kanji.literal}`}
+      <button
         className="w-24 h-24 text-5xl font-bold rounded-md flex items-center justify-center bg-gray2 border border-gray4 shadow-md relative overflow-hidden hover:border-gray6 hover:bg-gradient-to-b hover:from-gray5 hover:to-gray3 focus:outline-none focus-visible:border-2 focus-visible:border-gray8"
         {...props}
       >
@@ -42,7 +40,7 @@ export const KanjiItem = ({
           transition={{ type: "spring", damping: 20 }}
         />
         <span className="relative">{kanji.literal}</span>
-      </Link>
+      </button>
     </li>
   );
 };
