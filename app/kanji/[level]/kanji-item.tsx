@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import type { Kanji } from "@/lib/kanji";
 import { useSupabase } from "@/app/supabase";
+import cn from "classnames";
 
 export const KanjiItem = ({
   kanji,
@@ -13,7 +14,7 @@ export const KanjiItem = ({
   kanji: Kanji;
   level: number;
 } & Omit<React.ComponentPropsWithoutRef<"button">, "href">) => {
-  const { supabase, session } = useSupabase();
+  const { session } = useSupabase();
   const [proficiency, setProficiency] = React.useState(0);
 
   React.useEffect(() => {
@@ -29,7 +30,15 @@ export const KanjiItem = ({
   return (
     <li>
       <button
-        className="w-24 h-24 text-5xl font-bold rounded-md flex items-center justify-center bg-gray2 border border-gray4 shadow-md relative overflow-hidden hover:border-gray6 hover:bg-gradient-to-b hover:from-gray5 hover:to-gray3 focus:outline-none focus-visible:border-2 focus-visible:border-gray8"
+        className={cn(
+          "w-24 h-24 text-5xl font-bold rounded-md flex items-center justify-center bg-gray2 border border-gray4 relative overflow-hidden hover:border-gray6 hover:bg-gradient-to-b hover:from-gray5 hover:to-gray3 focus:outline-none focus-visible:border-2 focus-visible:border-gray8",
+          proficiency < 1 ? "shadow-md" : "shadow-gray4/60 border-gray6"
+        )}
+        style={
+          proficiency === 1
+            ? { boxShadow: "0 0 10px 5px var(--tw-shadow-color)" }
+            : undefined
+        }
         {...props}
       >
         <motion.span
