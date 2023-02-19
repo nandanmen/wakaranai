@@ -13,16 +13,29 @@ export async function getQuiz(
 
 const getRandomIndex = (max: number) => Math.floor(Math.random() * max);
 
+const pickUnique = <T>(seen: T[], arr: T[]): T => {
+  const index = getRandomIndex(arr.length);
+  const item = arr[index];
+  if (seen.includes(item)) {
+    return pickUnique(seen, arr);
+  }
+  return item;
+};
+
 export async function getQuizV2(
   level: number,
   count: "all" | number
 ): Promise<WordV2Response[]> {
   const kanji = await getKanjiByLevelAndCount(level, count);
-  const words = await Promise.all(
-    kanji.map(async (kanji) => {
-      const variations = await getVariations(kanji.literal);
-      return variations[getRandomIndex(variations.length)];
-    })
+  const variations = await Promise.all(
+    kanji.map((kanji) => getVariations(kanji.literal))
   );
+
+  const words = [] as WordV2Response[];
+  for (const variation of variations) {
+    const word = pickUnique(words, variation);
+    words.push(word);
+  }
+
   return words;
 }
