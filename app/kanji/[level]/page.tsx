@@ -43,7 +43,9 @@ export default async function KanjiPage({
       <div>
         <ul className="flex flex-wrap gap-6 col-start-2 w-[816px]">
           {list.map((kanji) => {
-            return <KanjiItem key={kanji.literal} kanji={kanji} />;
+            return (
+              <KanjiItem key={kanji.literal} kanji={kanji} level={_level} />
+            );
           })}
         </ul>
         <div className="h-24" />

@@ -4,28 +4,32 @@ import React from "react";
 import type { Kanji } from "@/lib/kanji";
 import { motion } from "framer-motion";
 import Balancer from "react-wrap-balancer";
-import type { Word } from "@/lib/words";
+import { WordV2Response } from "@/lib/words-v2";
+import { useSupabase } from "@/app/supabase";
+import useSWR from "swr";
+
+const SKIP_TAGS = ["obs", "ok", "oK", "col"];
 
 export const KanjiSidebar = ({
   kanji,
-  words,
+  level,
 }: {
   kanji: Kanji;
-  words: Word[];
+  level: number;
 }) => {
-  const getWordOptions = () => {
-    if (!words) return [];
-
-    const options: Word[] = [];
-    const meanings = new Set<string>();
-    words.forEach((word) => {
-      if (meanings.has(word.meanings[0].texts[0])) return;
-      meanings.add(word.meanings[0].texts[0]);
-      options.push(word);
-    });
-
-    return options;
-  };
+  const { supabase } = useSupabase();
+  const { data: words } = useSWR(
+    `variations-${kanji.literal}-${level}`,
+    async (key) => {
+      const [_, literal, level] = key.split("-");
+      const { data } = await supabase
+        .from("words")
+        .select()
+        .like("literal", `%${literal}%`)
+        .eq("jlpt", level);
+      return data as WordV2Response[];
+    }
+  );
 
   return (
     <aside className="w-[350px] p-8 pb-4 bg-gray2 border border-gray4 h-fit rounded-lg sticky -top-8 self-start">
@@ -60,21 +64,26 @@ export const KanjiSidebar = ({
         <span className="relative bg-gray2 text-gray10 px-4">Words</span>
       </h3>
       <ul className="divide-y divide-dashed divide-gray6">
-        {getWordOptions()
-          .slice(0, 5)
-          .map((word) => {
-            return (
-              <li key={word.literal} className="text-lg py-4 flex items-center">
-                <p className="shrink-0">{word.literal}</p>
-                <p className="text-gray10 ml-2 text-base shrink-0">
-                  {word.reading}
-                </p>
-                <p className="text-sm ml-auto text-right">
-                  {word.meanings[0].texts[0]}
-                </p>
-              </li>
-            );
-          })}
+        {words?.map((word) => {
+          const [sense] = word.senses;
+          return (
+            <li key={word.literal} className="text-lg py-4 flex items-center">
+              <p className="shrink-0">{word.literal}</p>
+              <p className="text-gray10 ml-2 text-base shrink-0">
+                {sense.readings.join(", ")}
+              </p>
+              <p className="text-sm ml-auto text-right">
+                {sense.meanings
+                  .filter((meaning) =>
+                    meaning.tags.every((tag) => !SKIP_TAGS.includes(tag))
+                  )
+                  .flatMap((meaning) => meaning.texts)
+                  .slice(0, 4)
+                  .join(", ")}
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </aside>
   );

@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/api";
-import { KanjiProficiency } from "@/lib/supabase/types";
+import { Proficiency } from "@/lib/supabase/types";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const MAX_PROFICIENCY = 4;
+const MAX_PROFICIENCY = 3;
 const MIN_PROFICIENCY = 0;
 
 export default async function handler(
@@ -14,10 +14,10 @@ export default async function handler(
     return;
   }
 
-  const { kanjiId, increment } = req.body;
-  if (!kanjiId) {
+  const { wordId, increment } = req.body;
+  if (!wordId) {
     res.status(400).json({
-      error: "Missing kanjiId",
+      error: "Missing wordId",
     });
     return;
   }
@@ -34,28 +34,28 @@ export default async function handler(
   }
 
   const userId = session.user.id;
-  const { data: kanjiProficiency } = await client
-    .from("kanji_proficiency")
+  const { data: wordProficiency } = await client
+    .from("proficiency")
     .select()
     .eq("user_id", userId)
-    .eq("kanji_id", kanjiId)
-    .single<KanjiProficiency>();
+    .eq("word_id", wordId)
+    .single<Proficiency>();
 
-  let proficiency = kanjiProficiency?.proficiency ?? 0;
+  let proficiency = wordProficiency?.proficiency ?? 0;
   if (increment) {
     proficiency = Math.min(MAX_PROFICIENCY, proficiency + 1);
   } else {
     proficiency = Math.max(MIN_PROFICIENCY, proficiency - 1);
   }
 
-  const { error } = await client.from("kanji_proficiency").upsert(
+  const { error } = await client.from("proficiency").upsert(
     {
       user_id: userId,
-      kanji_id: kanjiId,
+      word_id: wordId,
       updated_at: new Date(),
       proficiency,
     },
-    { onConflict: "kanji_id,user_id" }
+    { onConflict: "word_id,user_id" }
   );
   if (error) {
     return res.status(400).json({ error });

@@ -16,11 +16,6 @@ export function LoginModal() {
   const [state, setState] = React.useState<"idle" | "loading" | "success">(
     "idle"
   );
-  const submit = async () => {
-    setState("loading");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setState("success");
-  };
 
   return (
     <Dialog.Portal>
