@@ -2,8 +2,8 @@ import React from "react";
 import Link from "next/link";
 import cn from "classnames";
 import { getKanjiByLevel } from "@/lib/kanji";
-import { KanjiItem } from "./kanji-item";
 import { SessionButton } from "./session-button";
+import { KanjiList } from "./kanji-list";
 
 const levels = ["N5", "N4", "N3", "N2", "N1"];
 
@@ -41,13 +41,7 @@ export default async function KanjiPage({
         </div>
       </div>
       <div>
-        <ul className="flex flex-wrap gap-6 col-start-2 w-[816px]">
-          {list.map((kanji) => {
-            return (
-              <KanjiItem key={kanji.literal} kanji={kanji} level={_level} />
-            );
-          })}
-        </ul>
+        <KanjiList list={list} level={_level} />
         <div className="h-24" />
       </div>
     </main>
