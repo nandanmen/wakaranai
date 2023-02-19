@@ -13,7 +13,7 @@ export default async function QuizPage({ params, searchParams }: any) {
   );
 }
 
-const DEFAULT_COUNT = 20;
+const DEFAULT_COUNT = 10;
 
 const validateCount = (count?: string): "all" | number => {
   if (!count) return DEFAULT_COUNT;

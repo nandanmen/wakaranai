@@ -43,7 +43,7 @@ const PhraseText = ({
                 animate={{ y: 0, opacity: 1 }}
                 initial={{ y: 16, opacity: 0 }}
                 transition={{ type: "spring", damping: 20 }}
-                className="text-[3rem] w-full text-center absolute -top-[1.5em] whitespace-nowrap"
+                className="text-[3rem] w-full flex justify-center absolute -top-[1.5em] whitespace-nowrap"
               >
                 {part.reading}
               </motion.div>
@@ -103,6 +103,7 @@ export const Quiz = ({
         <QuizForm
           reviewing={current >= quiz.length}
           word={list[current]}
+          index={current}
           onSubmit={async (result, kanjiId) => {
             setResults([...results, { ...result, kanjiId }]);
             if (
@@ -110,6 +111,8 @@ export const Quiz = ({
               result.meaning.type !== "correct"
             ) {
               setList([...list, list[current]]);
+              setCurrent(current + 1);
+              return;
             }
             if (isLast) {
               router.push(`/kanji/${level}`);
@@ -164,10 +167,12 @@ const QuizForm = ({
   word,
   reviewing,
   onSubmit,
+  index,
 }: {
   word: WordV2Response;
   reviewing: boolean;
   onSubmit: (result: Result, wordId: number) => void;
+  index: number;
 }) => {
   const { session } = useSupabase();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -238,15 +243,15 @@ const QuizForm = ({
   return (
     <>
       <div className="flex shadow-lg relative">
-        <div className="w-[600px] font-bold bg-gradient-to-br from-gray3 to-gray1 overflow-hidden relative rounded-l-lg border border-gray4 flex items-center justify-center">
+        <div className="w-[1000px] h-[600px] font-bold bg-gradient-to-br from-gray3 to-gray1 overflow-hidden relative rounded-l-lg border border-gray4 flex items-center justify-center">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
-              key={word.literal}
-              initial={{ x: 600 }}
-              animate={{ x: 0 }}
-              exit={{ x: -600 }}
+              key={word.literal + index}
+              initial={{ y: 600 }}
+              animate={{ y: 0 }}
+              exit={{ y: -600 }}
               transition={{ type: "spring", damping: 20 }}
-              className="text-gray12 text-[8rem]"
+              className="text-gray12 text-[12rem]"
             >
               <PhraseText phrase={word} showReading={submitted} />
             </motion.div>
