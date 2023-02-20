@@ -21,6 +21,7 @@ export const KanjiItem = ({
       <button
         className={cn(
           "w-24 h-24 text-5xl font-bold rounded-md flex items-center justify-center bg-gray2 border border-gray4 relative overflow-hidden hover:border-gray6 hover:bg-gradient-to-b hover:from-gray5 hover:to-gray3 focus:outline-none focus-visible:border-2 focus-visible:border-gray8",
+
           _proficiency < 1 ? "shadow-md" : "shadow-gray4/60 border-gray6"
         )}
         style={
