@@ -1,6 +1,11 @@
 import { getKanjiByLevelAndCount, Kanji } from "./kanji";
 import { createServerClient } from "./supabase/server";
-import { getVariations, VariationsResponse, WordV2Response } from "./words-v2";
+import {
+  getBulkVariations,
+  getVariations,
+  VariationsResponse,
+  WordV2Response,
+} from "./words-v2";
 
 export type QuizLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -104,13 +109,21 @@ export async function getQuizV2(
     .filter((proficiency) => proficiency.proficiency >= MAX_PROFICIENCY)
     .map((proficiency) => proficiency.word_id);
 
-  const variations = await Promise.all(
-    kanjiSet.map((kanji) => getVariations(kanji.literal))
+  const variationsData = await getBulkVariations(
+    kanjiSet.map((k) => k.literal, level)
   );
 
+  const variationsByKanji = variationsData.reduce((acc, variations) => {
+    if (!acc[variations.kanji]) {
+      acc[variations.kanji] = [];
+    }
+    acc[variations.kanji].push(variations);
+    return acc;
+  }, {} as Record<string, VariationsResponse[]>);
+
   const words = [] as VariationsResponse[];
-  for (const variation of variations) {
-    const allowList = variation.filter((v) => !wordBlockList.includes(v.id));
+  for (const [_, variations] of Object.entries(variationsByKanji)) {
+    const allowList = variations.filter((v) => !wordBlockList.includes(v.id));
     const word = pickUnique(words, allowList);
     words.push(word);
   }

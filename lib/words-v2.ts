@@ -38,7 +38,17 @@ export type VariationsResponse = {
   literal: string;
   jlpt: number;
   senses: WordSense[];
+  kanji: string;
 };
+
+export async function getBulkVariations(kanjis: string[], level = 5) {
+  const { data } = await supabase
+    .from("variations")
+    .select()
+    .in("kanji", kanjis)
+    .eq("jlpt", level);
+  return data as VariationsResponse[];
+}
 
 export async function getVariations(
   kanji: string,
