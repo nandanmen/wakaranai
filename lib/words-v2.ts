@@ -41,6 +41,11 @@ export type VariationsResponse = {
   kanji: string;
 };
 
+export async function getWordsAtLevel(level: number) {
+  const { data } = await supabase.from("words").select().eq("jlpt", level);
+  return data as WordV2Response[];
+}
+
 export async function getBulkVariations(kanjis: string[], level = 5) {
   const { data } = await supabase
     .from("variations")

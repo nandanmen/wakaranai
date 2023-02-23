@@ -28,7 +28,7 @@ const shouldIncrement = (result: Result) => {
   return result.reading.type === "correct" && result.meaning.type === "correct";
 };
 
-const PhraseText = ({
+export const PhraseText = ({
   phrase,
   showReading = false,
 }: {
