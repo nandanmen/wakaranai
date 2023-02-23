@@ -2,8 +2,9 @@
 
 import { useSupabase } from "@/app/supabase";
 import { Kanji } from "@/lib/kanji";
-import useSWR from "swr";
+import useSWR, { preload } from "swr";
 import { KanjiItem } from "./kanji-item";
+import { fetchWords } from "./kanji-sidebar";
 
 type KanjiProficiency = {
   kanji: string;
@@ -31,7 +32,15 @@ function consolidateData(data: KanjiProficiency[] | null) {
   return result;
 }
 
-export function KanjiList({ list, level }: { list: Kanji[]; level: number }) {
+export function KanjiList({
+  list,
+  level,
+  onKanjiSelect,
+}: {
+  list: Kanji[];
+  level: number;
+  onKanjiSelect: (kanji: Kanji) => void;
+}) {
   const { supabase, session } = useSupabase();
   const { data } = useSWR(
     `${session?.user.id}/kanji/${level}`,
@@ -55,6 +64,10 @@ export function KanjiList({ list, level }: { list: Kanji[]; level: number }) {
             kanji={kanji}
             level={level}
             proficiency={data?.[kanji.literal]}
+            onClick={() => onKanjiSelect(kanji)}
+            onMouseEnter={() =>
+              preload(`/api/words?kanji=${kanji.literal}`, fetchWords)
+            }
           />
         );
       })}

@@ -33,6 +33,12 @@ export type WordV2Response = WordV2 & {
   created_at: string;
 };
 
+export type VariationsResponse = {
+  id: number;
+  literal: string;
+  senses: WordSense[];
+};
+
 export async function getVariations(
   kanji: string,
   level = 5
