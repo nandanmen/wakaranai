@@ -36,17 +36,18 @@ export type WordV2Response = WordV2 & {
 export type VariationsResponse = {
   id: number;
   literal: string;
+  jlpt: number;
   senses: WordSense[];
 };
 
 export async function getVariations(
   kanji: string,
   level = 5
-): Promise<WordV2Response[]> {
+): Promise<VariationsResponse[]> {
   const { data } = await supabase
-    .from("words")
+    .from("variations")
     .select()
-    .like("literal", `%${kanji}%`)
+    .eq("kanji", kanji)
     .eq("jlpt", level);
-  return data as WordV2Response[];
+  return data as VariationsResponse[];
 }

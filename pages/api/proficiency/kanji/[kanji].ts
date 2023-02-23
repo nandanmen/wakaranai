@@ -1,12 +1,19 @@
+import { getKanjiProficiency } from "@/lib/proficiency";
 import { createClient } from "@/lib/supabase/api";
-import { Proficiency } from "@/lib/supabase/types";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { kanji, level } = req.query;
+  const { kanji } = req.query;
+
+  if (!kanji || Array.isArray(kanji)) {
+    res.status(400).json({
+      error: "Missing kanji",
+    });
+    return;
+  }
 
   const client = createClient(req, res);
   const {
@@ -19,31 +26,6 @@ export default async function handler(
     return;
   }
 
-  const { data } = await client
-    .from("words")
-    .select("id")
-    .like("literal", `%${kanji}%`)
-    .eq("jlpt", Number(level));
-
-  if (!data?.length) {
-    return res.status(404).end();
-  }
-
-  const proficiencies = await Promise.all(
-    data.map(async ({ id }) => {
-      const { data } = await client
-        .from("proficiency")
-        .select()
-        .eq("user_id", session.user.id)
-        .eq("word_id", id)
-        .single<Proficiency>();
-      if (!data) return 0;
-      return data.proficiency;
-    })
-  );
-
-  const total = proficiencies.reduce((acc, cur) => acc + cur, 0);
-  const average = total / proficiencies.length;
-
-  return res.status(200).json({ proficiency: average });
+  const proficiency = await getKanjiProficiency(client, kanji, session.user.id);
+  return res.status(200).json({ proficiency });
 }
