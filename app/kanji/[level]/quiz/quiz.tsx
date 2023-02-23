@@ -18,6 +18,12 @@ import { toHiragana } from "wanakana";
 
 const JP_DELIMITER = `.`;
 
+type Phrase = {
+  id: number;
+  literal: string;
+  senses: WordV2Response["senses"];
+};
+
 const shouldIncrement = (result: Result) => {
   return result.reading.type === "correct" && result.meaning.type === "correct";
 };
@@ -26,7 +32,7 @@ const PhraseText = ({
   phrase,
   showReading = false,
 }: {
-  phrase: WordV2Response;
+  phrase: Phrase;
   showReading?: boolean;
 }) => {
   const { parts } = phrase.senses[0];
@@ -58,13 +64,7 @@ const PhraseText = ({
   );
 };
 
-export const Quiz = ({
-  level,
-  quiz,
-}: {
-  quiz: WordV2Response[];
-  level: number;
-}) => {
+export const Quiz = ({ level, quiz }: { quiz: Phrase[]; level: number }) => {
   const [current, setCurrent] = React.useState(0);
   const [results, setResults] = React.useState<
     Array<Result & { wordId: number }>
@@ -136,10 +136,7 @@ const isJapaneseReadingCorrect = (reading: string, input: string) => {
 
 const IN_PARENS = /\(.*\)/g;
 
-const calculateAnswer = (
-  form: HTMLFormElement,
-  word: WordV2Response
-): Result => {
+const calculateAnswer = (form: HTMLFormElement, word: Phrase): Result => {
   const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
   const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
   const readingAnswer = getInputAnswer(readingInput, (value) => {
@@ -169,7 +166,7 @@ const QuizForm = ({
   onSubmit,
   index,
 }: {
-  word: WordV2Response;
+  word: Phrase;
   reviewing: boolean;
   onSubmit: (result: Result, wordId: number) => void;
   index: number;

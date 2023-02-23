@@ -33,14 +33,31 @@ export type WordV2Response = WordV2 & {
   created_at: string;
 };
 
+export type VariationsResponse = {
+  id: number;
+  literal: string;
+  jlpt: number;
+  senses: WordSense[];
+  kanji: string;
+};
+
+export async function getBulkVariations(kanjis: string[], level = 5) {
+  const { data } = await supabase
+    .from("variations")
+    .select()
+    .in("kanji", kanjis)
+    .eq("jlpt", level);
+  return data as VariationsResponse[];
+}
+
 export async function getVariations(
   kanji: string,
   level = 5
-): Promise<WordV2Response[]> {
+): Promise<VariationsResponse[]> {
   const { data } = await supabase
-    .from("words")
+    .from("variations")
     .select()
-    .like("literal", `%${kanji}%`)
+    .eq("kanji", kanji)
     .eq("jlpt", level);
-  return data as WordV2Response[];
+  return data as VariationsResponse[];
 }

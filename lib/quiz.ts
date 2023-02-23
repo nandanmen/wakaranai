@@ -1,7 +1,11 @@
 import { getKanjiByLevelAndCount, Kanji } from "./kanji";
-import { getKanjiProficiency, getProficiency } from "./proficiency";
 import { createServerClient } from "./supabase/server";
-import { getVariations, WordV2Response } from "./words-v2";
+import {
+  getBulkVariations,
+  getVariations,
+  VariationsResponse,
+  WordV2Response,
+} from "./words-v2";
 
 export type QuizLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -34,10 +38,42 @@ const sample = <T>(arr: T[], count: number): T[] => {
   return seen;
 };
 
+type ProficiencyResponse = {
+  user_id: string;
+  kanji: string;
+  jlpt: number;
+  word_id: number;
+  proficiency: number;
+  num_variations: number;
+  literal: string;
+};
+
+const getKanjiProficiencies = (proficiencies: ProficiencyResponse[]) => {
+  const map = {} as Record<string, { total: number; num_variations: number }>;
+
+  proficiencies.forEach((proficiency) => {
+    const { kanji, proficiency: prof, num_variations } = proficiency;
+    if (!map[kanji])
+      map[kanji] = {
+        total: 0,
+        num_variations,
+      };
+    map[kanji].total += prof;
+  });
+
+  return Object.entries(map).reduce(
+    (acc, [kanji, { total, num_variations }]) => {
+      acc[kanji] = total / num_variations;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+};
+
 export async function getQuizV2(
   level: number,
   count: "all" | number
-): Promise<WordV2Response[]> {
+): Promise<VariationsResponse[]> {
   const client = createServerClient();
 
   const {
@@ -48,43 +84,46 @@ export async function getQuizV2(
   const { data: kanji } = await client.from("kanji").select().eq("jlpt", level);
   if (!kanji) throw new Error(`No kanji found for level ${level}`);
 
-  const proficiencies = await Promise.all(
-    kanji.map(async (kanji) => {
-      const proficiency = (await getKanjiProficiency(
-        kanji.literal,
-        level
-      )) as number;
-      return { kanji, proficiency };
-    })
+  // Select only kanji that are not fully proficient
+  // Out of those kanji, select only variants that are not fully proficient
+
+  const { data: proficiencies } = await client
+    .from("kanji_proficiency")
+    .select<"*", ProficiencyResponse>()
+    .eq("user_id", session.user.id)
+    .eq("jlpt", level);
+
+  if (!proficiencies?.length) return getAnonymousQuiz(level, count);
+
+  const kanjiProficiencies = getKanjiProficiencies(proficiencies);
+  const blockList = Object.keys(kanjiProficiencies).filter(
+    (kanji) => kanjiProficiencies[kanji] >= MAX_PROFICIENCY
   );
-  const allowList = proficiencies.filter(
-    ({ proficiency }) => proficiency < MAX_PROFICIENCY
-  );
+  const allowList = kanji.filter(({ literal }) => !blockList.includes(literal));
   const kanjiSet = sample(
     allowList,
     count === "all" ? allowList.length : count
   );
 
-  const variations = await Promise.all(
-    kanjiSet.map(async (kanji) => {
-      const variations = await getVariations(kanji.kanji.literal);
-      return Promise.all(
-        variations.map(async (variation) => {
-          const proficiency = await getProficiency(
-            variation.id,
-            session.user.id
-          );
-          return { variation, proficiency };
-        })
-      );
-    })
+  const wordBlockList = proficiencies
+    .filter((proficiency) => proficiency.proficiency >= MAX_PROFICIENCY)
+    .map((proficiency) => proficiency.word_id);
+
+  const variationsData = await getBulkVariations(
+    kanjiSet.map((k) => k.literal, level)
   );
 
-  const words = [] as WordV2Response[];
-  for (const variation of variations) {
-    const allowList = variation
-      .filter(({ proficiency }) => proficiency < MAX_PROFICIENCY)
-      .map(({ variation }) => variation);
+  const variationsByKanji = variationsData.reduce((acc, variations) => {
+    if (!acc[variations.kanji]) {
+      acc[variations.kanji] = [];
+    }
+    acc[variations.kanji].push(variations);
+    return acc;
+  }, {} as Record<string, VariationsResponse[]>);
+
+  const words = [] as VariationsResponse[];
+  for (const [_, variations] of Object.entries(variationsByKanji)) {
+    const allowList = variations.filter((v) => !wordBlockList.includes(v.id));
     const word = pickUnique(words, allowList);
     words.push(word);
   }
@@ -98,7 +137,7 @@ async function getAnonymousQuiz(level: number, count: "all" | number) {
     kanji.map((kanji) => getVariations(kanji.literal))
   );
 
-  const words = [] as WordV2Response[];
+  const words = [] as VariationsResponse[];
   for (const variation of variations) {
     const word = pickUnique(words, variation);
     words.push(word);
