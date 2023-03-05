@@ -34,15 +34,15 @@ export const KanjiSidebar = React.forwardRef<HTMLElement, KanjiSidebarProps>(
           opacity: 1,
         }}
         initial={{ y: 16, opacity: 0 }}
-        transition={{ type: "spring", damping: 20 }}
-        className="w-[350px] p-8 pb-4 bg-gray2 border border-gray4 h-fit rounded-lg sticky -top-8 self-start max-h-[calc(100vh_-_192px)] flex flex-col"
+        exit={{
+          scale: 0.9,
+          opacity: 0,
+          transition: { type: "tween", duration: 0.1 },
+        }}
+        transition={{ y: { type: "spring", damping: 20 } }}
+        style={{ originX: "100%", originY: 0 }}
+        className="p-12 sticky top-0 h-screen flex flex-col"
       >
-        <button
-          className="absolute -top-3 -right-3 bg-gray5 p-2 rounded-full shadow-md border border-gray7 focus-visible:outline-2 focus-visible:outline-gray9"
-          onClick={onClose}
-        >
-          <IconOnly type="incorrect" />
-        </button>
         <div className="py-8 bg-gray3 border rounded-lg border-gray5 shadow-lg flex items-center justify-center text-[10rem] font-bold leading-none">
           {kanji.literal}
         </div>

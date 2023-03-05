@@ -16,12 +16,13 @@ export const KanjiListPage = ({
 }) => {
   const [activeKanji, setActiveKanji] = React.useState<Kanji | null>(null);
   return (
-    <>
+    <div className="h-screen overflow-y-auto grid grid-cols-[300px_1fr_450px]">
       <Sidebar level={level} mode="kanji" />
-      <motion.div layout>
-        <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
-        <div className="h-24" />
-      </motion.div>
+      <main className="p-12 border-r border-gray4">
+        <div className="w-fit mx-auto">
+          <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
+        </div>
+      </main>
       <AnimatePresence mode="popLayout">
         {activeKanji && (
           <KanjiSidebar
@@ -30,6 +31,6 @@ export const KanjiListPage = ({
           />
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };

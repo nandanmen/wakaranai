@@ -15,7 +15,7 @@ export const Sidebar = ({
   mode: "kanji" | "vocab";
 }) => {
   return (
-    <motion.div className="sticky -top-8 self-start w-[150px] space-y-6" layout>
+    <div className="sticky top-0 space-y-6 h-screen p-12 border-r border-gray4">
       <div>
         <Link href={`/kanji/${level}`}>Kanji</Link>
         <Link href={`/vocab/${level}`}>Vocab</Link>
@@ -42,7 +42,7 @@ export const Sidebar = ({
         </Link>
         <SessionButton />
       </div>
-    </motion.div>
+    </div>
   );
 };
 
