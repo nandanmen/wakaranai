@@ -15,7 +15,7 @@ export const Sidebar = ({
   mode: "kanji" | "vocab";
 }) => {
   return (
-    <div className="sticky top-0 space-y-6 h-screen p-12 border-r border-gray4">
+    <div className="sticky top-12 space-y-6 h-[calc(100vh_-_6rem)] px-12 my-12 border-r border-gray4">
       <div>
         <Link href={`/kanji/${level}`}>Kanji</Link>
         <Link href={`/vocab/${level}`}>Vocab</Link>

@@ -30,14 +30,8 @@ export const VocabSidebar = ({
       }}
       initial={{ y: 16, opacity: 0 }}
       transition={{ type: "spring", damping: 20 }}
-      className="w-fit min-w-[350px] p-8 pb-4 bg-gray2 border border-gray4 h-fit rounded-lg sticky -top-8 self-start max-h-[calc(100vh_-_192px)] flex flex-col"
+      className="h-full px-12 flex flex-col"
     >
-      <button
-        className="absolute -top-3 -right-3 bg-gray5 p-2 rounded-full shadow-md border border-gray7 focus-visible:outline-2 focus-visible:outline-gray9"
-        onClick={onClose}
-      >
-        <IconOnly type="incorrect" />
-      </button>
       <div className="p-8 bg-gray3 border rounded-lg border-gray5 shadow-lg flex items-center justify-center font-bold leading-none text-[5rem]">
         <PhraseText phrase={word} />
       </div>

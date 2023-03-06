@@ -19,14 +19,14 @@ type KanjiSidebarProps = {
   onClose: () => void;
 };
 
-export const KanjiSidebar = React.forwardRef<HTMLElement, KanjiSidebarProps>(
+export const KanjiSidebar = React.forwardRef<HTMLDivElement, KanjiSidebarProps>(
   function KanjiSidebar({ kanji, onClose }, ref) {
     const { data: words } = useSWR(
       `/api/words?kanji=${kanji.literal}`,
       fetchWords
     );
     return (
-      <motion.aside
+      <motion.div
         ref={ref}
         key={kanji.literal}
         animate={{
@@ -41,7 +41,7 @@ export const KanjiSidebar = React.forwardRef<HTMLElement, KanjiSidebarProps>(
         }}
         transition={{ y: { type: "spring", damping: 20 } }}
         style={{ originX: "100%", originY: 0 }}
-        className="p-12 sticky top-0 h-screen flex flex-col"
+        className="h-full px-12 flex flex-col"
       >
         <div className="py-8 bg-gray3 border rounded-lg border-gray5 shadow-lg flex items-center justify-center text-[10rem] font-bold leading-none">
           {kanji.literal}
@@ -73,7 +73,7 @@ export const KanjiSidebar = React.forwardRef<HTMLElement, KanjiSidebarProps>(
           <span className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-px bg-gray6"></span>
           <span className="relative bg-gray2 text-gray10 px-4">Words</span>
         </h3>
-        <ul className="divide-y divide-dashed divide-gray6 overflow-y-auto h-full -mx-8 px-8">
+        <ul className="divide-y divide-dashed divide-gray6 overflow-y-auto h-full">
           {words?.map((word) => {
             const [sense] = word.senses;
             return (
@@ -82,7 +82,7 @@ export const KanjiSidebar = React.forwardRef<HTMLElement, KanjiSidebarProps>(
                 <p className="text-gray10 ml-2 text-base shrink-0">
                   {sense.readings.join(", ")}
                 </p>
-                <p className="text-sm ml-auto text-right">
+                <p className="text-sm ml-auto pl-4 text-right">
                   {sense.meanings
                     .filter((meaning) =>
                       meaning.tags.every((tag) => !SKIP_TAGS.includes(tag))
@@ -95,7 +95,7 @@ export const KanjiSidebar = React.forwardRef<HTMLElement, KanjiSidebarProps>(
             );
           })}
         </ul>
-      </motion.aside>
+      </motion.div>
     );
   }
 );

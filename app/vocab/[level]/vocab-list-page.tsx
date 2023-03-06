@@ -11,26 +11,29 @@ export function VocabListPage({ words }: { words: WordV2Response[] }) {
   );
   return (
     <>
-      <div>
-        <ul className="flex flex-wrap w-[948px] gap-6">
-          {words
-            .filter((word) => word.literal.length > 1)
-            .map((word) => (
-              <li key={word.id}>
-                <button
-                  className="block w-[300px] text-3xl bg-gray2 rounded-md p-4 border border-gray4 shadow-md font-bold"
-                  onClick={() => setActiveWord(word)}
-                >
-                  {word.literal}
-                </button>
-              </li>
-            ))}
-        </ul>
-        <div className="h-24" />
-      </div>
-      {activeWord && (
-        <VocabSidebar word={activeWord} onClose={() => setActiveWord(null)} />
-      )}
+      <main className="p-12">
+        <div className="w-fit mx-auto">
+          <ul className="flex flex-wrap w-[948px] gap-6">
+            {words
+              .filter((word) => word.literal.length > 1)
+              .map((word) => (
+                <li key={word.id}>
+                  <button
+                    className="block w-[300px] text-3xl bg-gray2 rounded-md p-4 border border-gray4 shadow-md font-bold"
+                    onClick={() => setActiveWord(word)}
+                  >
+                    {word.literal}
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </main>
+      <aside className="sticky top-12 h-[calc(100vh_-_6rem)] flex flex-col border-l border-gray4">
+        {activeWord && (
+          <VocabSidebar word={activeWord} onClose={() => setActiveWord(null)} />
+        )}
+      </aside>
     </>
   );
 }

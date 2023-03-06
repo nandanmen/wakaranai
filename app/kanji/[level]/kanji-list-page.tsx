@@ -16,21 +16,23 @@ export const KanjiListPage = ({
 }) => {
   const [activeKanji, setActiveKanji] = React.useState<Kanji | null>(null);
   return (
-    <div className="h-screen overflow-y-auto grid grid-cols-[300px_1fr_450px]">
+    <>
       <Sidebar level={level} mode="kanji" />
-      <main className="p-12 border-r border-gray4">
+      <main className="p-12">
         <div className="w-fit mx-auto">
           <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
         </div>
       </main>
-      <AnimatePresence mode="popLayout">
-        {activeKanji && (
-          <KanjiSidebar
-            kanji={activeKanji}
-            onClose={() => setActiveKanji(null)}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+      <aside className="sticky top-12 h-[calc(100vh_-_6rem)] flex flex-col border-l border-gray4">
+        <AnimatePresence mode="popLayout">
+          {activeKanji && (
+            <KanjiSidebar
+              kanji={activeKanji}
+              onClose={() => setActiveKanji(null)}
+            />
+          )}
+        </AnimatePresence>
+      </aside>
+    </>
   );
 };
