@@ -29,7 +29,7 @@ export function VocabListPage({ words }: { words: WordV2Response[] }) {
           </ul>
         </div>
       </main>
-      <aside className="sticky top-12 h-[calc(100vh_-_6rem)] flex flex-col border-l border-gray4">
+      <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4">
         {activeWord && (
           <VocabSidebar word={activeWord} onClose={() => setActiveWord(null)} />
         )}

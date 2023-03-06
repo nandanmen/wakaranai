@@ -30,9 +30,9 @@ export const VocabSidebar = ({
       }}
       initial={{ y: 16, opacity: 0 }}
       transition={{ type: "spring", damping: 20 }}
-      className="h-full px-12 flex flex-col"
+      className="h-full p-12 flex flex-col"
     >
-      <div className="p-8 bg-gray3 border rounded-lg border-gray5 shadow-lg flex items-center justify-center font-bold leading-none text-[5rem]">
+      <div className="p-8 bg-gray2 border rounded-lg border-gray5 shadow-lg flex items-center justify-center font-bold leading-none text-[5rem]">
         <PhraseText phrase={word} />
       </div>
       <h3 className="font-mono text-sm mt-6 relative text-center">

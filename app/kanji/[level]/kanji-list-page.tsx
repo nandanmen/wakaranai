@@ -23,7 +23,7 @@ export const KanjiListPage = ({
           <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
         </div>
       </main>
-      <aside className="sticky top-12 h-[calc(100vh_-_6rem)] flex flex-col border-l border-gray4">
+      <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4">
         <AnimatePresence mode="popLayout">
           {activeKanji && (
             <KanjiSidebar

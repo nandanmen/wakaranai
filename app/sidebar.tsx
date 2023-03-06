@@ -15,10 +15,26 @@ export const Sidebar = ({
   mode: "kanji" | "vocab";
 }) => {
   return (
-    <div className="sticky top-12 space-y-6 h-[calc(100vh_-_6rem)] px-12 my-12 border-r border-gray4">
-      <div>
-        <Link href={`/kanji/${level}`}>Kanji</Link>
-        <Link href={`/vocab/${level}`}>Vocab</Link>
+    <div className="sticky top-0 space-y-6 h-screen p-12 border-r border-gray4">
+      <div className="flex">
+        <Link
+          className={cn(
+            "flex-1 text-center font-bold py-1 rounded-md",
+            mode === "kanji" ? "bg-gray2" : "text-gray8"
+          )}
+          href={`/kanji/${level}`}
+        >
+          Kanji
+        </Link>
+        <Link
+          className={cn(
+            "flex-1 text-center font-bold py-1 rounded-md",
+            mode === "vocab" ? "bg-gray2" : "text-gray8"
+          )}
+          href={`/vocab/${level}`}
+        >
+          Vocab
+        </Link>
       </div>
       <ul>
         {levels.map((_level) => {

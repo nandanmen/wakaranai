@@ -41,9 +41,9 @@ export const KanjiSidebar = React.forwardRef<HTMLDivElement, KanjiSidebarProps>(
         }}
         transition={{ y: { type: "spring", damping: 20 } }}
         style={{ originX: "100%", originY: 0 }}
-        className="h-full px-12 flex flex-col"
+        className="h-full p-12 flex flex-col"
       >
-        <div className="py-8 bg-gray3 border rounded-lg border-gray5 shadow-lg flex items-center justify-center text-[10rem] font-bold leading-none">
+        <div className="py-8 bg-gray2 border rounded-lg border-gray5 shadow-lg flex items-center justify-center text-[10rem] font-bold leading-none">
           {kanji.literal}
         </div>
         <h2 className="text-center text-xl font-bold mt-4 mb-6">
