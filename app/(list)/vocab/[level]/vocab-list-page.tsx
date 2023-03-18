@@ -3,7 +3,7 @@
 import React from "react";
 import { useCycle } from "framer-motion";
 import { WordV2Response } from "@/lib/words-v2";
-import { fetchWord, VocabSidebar } from "./vocab-sidebar";
+import { VocabSidebar } from "./vocab-sidebar";
 import useSWR, { preload } from "swr";
 import { DotBackground } from "../../dot-background";
 import { useSupabase } from "@/app/supabase";
@@ -52,15 +52,20 @@ export function VocabListPage({ words }: { words: WordV2Response[] }) {
       <main className="p-12 relative">
         <DotBackground />
         <div className="relative">
-          <ul className="grid grid-cols-[repeat(auto-fill,300px)] justify-center gap-6 px-20">
+          <ul className="grid grid-cols-[repeat(auto-fill,250px)] justify-center gap-6">
             {sortedWords.map((word) => {
               return (
                 <li key={word.id}>
                   <ProgressButton
-                    className="block w-[300px] text-3xl p-4 font-bold"
+                    className="block w-full text-2xl p-4 font-bold"
                     proficiency={data?.[word.id] ?? 0}
                     direction="x"
                     onClick={() => setActiveWord(word)}
+                    onMouseEnter={() =>
+                      preload(`/api/words/${word.literal}/kanji`, (url) => {
+                        return fetch(url).then((res) => res.json());
+                      })
+                    }
                   >
                     {word.literal}
                   </ProgressButton>
@@ -75,7 +80,7 @@ export function VocabListPage({ words }: { words: WordV2Response[] }) {
           </button>
         </div>
       </main>
-      <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4">
+      <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4 w-[500px]">
         {activeWord && (
           <VocabSidebar word={activeWord} onClose={() => setActiveWord(null)} />
         )}

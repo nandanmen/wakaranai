@@ -1,6 +1,5 @@
 import cn from "classnames";
 import { motion } from "framer-motion";
-import { SparkleIcon } from "./sparkle-icon";
 
 type ProgressButtonProps = {
   proficiency: number;
@@ -47,11 +46,33 @@ export function ProgressButton({
         {...progressProps}
       />
       {proficiency === 1 && (
-        <span className="absolute top-1 right-1">
-          <SparkleIcon />
+        <span className="absolute -top-4 -left-4 text-gray6">
+          <SparkleIcon size={64} />
         </span>
       )}
       <span className="relative">{children}</span>
     </button>
   );
 }
+
+const SparkleIcon = ({ size = 18 }) => {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M15 4.75C15 7.51142 13.5114 10 10.75 10C13.5114 10 15 12.4886 15 15.25C15 12.4886 16.4886 10 19.25 10C16.4886 10 15 7.51142 15 4.75Z"></path>
+        <path d="M8 12.75C8 14.4069 6.40685 16 4.75 16C6.40685 16 8 17.5931 8 19.25C8 17.5931 9.59315 16 11.25 16C9.59315 16 8 14.4069 8 12.75Z"></path>
+      </g>
+    </svg>
+  );
+};

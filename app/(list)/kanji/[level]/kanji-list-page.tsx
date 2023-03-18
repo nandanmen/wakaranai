@@ -23,16 +23,16 @@ export const KanjiListPage = ({
         <DotBackground />
         <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
       </main>
-      <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4">
-        <AnimatePresence mode="popLayout">
-          {activeKanji && (
+      <AnimatePresence>
+        {activeKanji && (
+          <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4 w-[400px]">
             <KanjiSidebar
               kanji={activeKanji}
               onClose={() => setActiveKanji(null)}
             />
-          )}
-        </AnimatePresence>
-      </aside>
+          </aside>
+        )}
+      </AnimatePresence>
     </>
   );
 };

@@ -10,12 +10,12 @@ type WordMeaning = {
   partsOfSpeech: string[];
 };
 
-type WordPart = {
+export type WordPart = {
   literal: string;
   reading?: string;
 };
 
-type WordSense = {
+export type WordSense = {
   readings: string[];
   meanings: WordMeaning[];
   parts: WordPart[];
