@@ -33,9 +33,7 @@ export default async function RootLayout({
         {!session && <LoadingScreen />}
         <SupabaseProvider session={session}>
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <div className="h-screen overflow-y-auto grid grid-cols-[300px_1fr_450px]">
-            {children}
-          </div>
+          {children}
         </SupabaseProvider>
       </body>
     </html>

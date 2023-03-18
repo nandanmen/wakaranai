@@ -4,6 +4,7 @@ import React from "react";
 import { WordV2Response } from "@/lib/words-v2";
 import { fetchWord, VocabSidebar } from "./vocab-sidebar";
 import { preload } from "swr";
+import { DotBackground } from "../../dot-background";
 
 export function VocabListPage({ words }: { words: WordV2Response[] }) {
   const [activeWord, setActiveWord] = React.useState<WordV2Response | null>(
@@ -11,7 +12,8 @@ export function VocabListPage({ words }: { words: WordV2Response[] }) {
   );
   return (
     <>
-      <main className="p-12">
+      <main className="p-12 relative">
+        <DotBackground />
         <div className="w-fit mx-auto">
           <ul className="flex flex-wrap w-[948px] gap-6">
             {words

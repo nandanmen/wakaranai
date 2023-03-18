@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { KanjiList } from "./kanji-list";
 import { KanjiSidebar } from "./kanji-sidebar";
 import { Sidebar } from "@/app/sidebar";
+import { DotBackground } from "../../dot-background";
 
 export const KanjiListPage = ({
   list,
@@ -18,7 +19,8 @@ export const KanjiListPage = ({
   return (
     <>
       <Sidebar level={level} mode="kanji" />
-      <main className="p-12">
+      <main className="p-12 relative">
+        <DotBackground />
         <div className="w-fit mx-auto">
           <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
         </div>
