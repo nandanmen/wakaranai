@@ -21,9 +21,7 @@ export const KanjiListPage = ({
       <Sidebar level={level} mode="kanji" />
       <main className="p-12 relative">
         <DotBackground />
-        <div className="w-fit mx-auto">
-          <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
-        </div>
+        <KanjiList list={list} level={level} onKanjiSelect={setActiveKanji} />
       </main>
       <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4">
         <AnimatePresence mode="popLayout">
