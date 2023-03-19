@@ -26,10 +26,7 @@ export const KanjiListPage = ({
       <AnimatePresence>
         {activeKanji && (
           <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4 w-[400px]">
-            <KanjiSidebar
-              kanji={activeKanji}
-              onClose={() => setActiveKanji(null)}
-            />
+            <KanjiSidebar kanji={activeKanji} onWordSelect={() => {}} />
           </aside>
         )}
       </AnimatePresence>
