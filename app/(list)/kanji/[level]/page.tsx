@@ -14,9 +14,5 @@ export default async function KanjiPage({
     redirect("/kanji/5");
   }
   const list = await getKanjiByLevel(_level);
-  return (
-    <main className="h-screen overflow-y-scroll mx-auto px-8 py-24 flex gap-20 justify-center">
-      <KanjiListPage list={list} level={_level} />
-    </main>
-  );
+  return <KanjiListPage list={list} level={_level} />;
 }

@@ -10,12 +10,12 @@ type WordMeaning = {
   partsOfSpeech: string[];
 };
 
-type WordPart = {
+export type WordPart = {
   literal: string;
   reading?: string;
 };
 
-type WordSense = {
+export type WordSense = {
   readings: string[];
   meanings: WordMeaning[];
   parts: WordPart[];
@@ -40,6 +40,11 @@ export type VariationsResponse = {
   senses: WordSense[];
   kanji: string;
 };
+
+export async function getWordsAtLevel(level: number) {
+  const { data } = await supabase.from("words").select().eq("jlpt", level);
+  return data as WordV2Response[];
+}
 
 export async function getBulkVariations(kanjis: string[], level = 5) {
   const { data } = await supabase

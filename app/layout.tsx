@@ -1,6 +1,7 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/supabase/server";
 import { SupabaseListener, SupabaseProvider } from "./supabase";
 import "./globals.css";
+import { LoadingScreen } from "./loading-screen";
 
 const loadScript = `
   (function () {
@@ -19,7 +20,7 @@ export default async function RootLayout({
 }) {
   const {
     data: { session },
-  } = await createServerClient().auth.getSession();
+  } = await getSession();
   return (
     <html lang="en">
       {/*
@@ -29,6 +30,7 @@ export default async function RootLayout({
       <head />
       <body className="bg-gray1">
         <script dangerouslySetInnerHTML={{ __html: loadScript }} />
+        {!session && <LoadingScreen />}
         <SupabaseProvider session={session}>
           <SupabaseListener serverAccessToken={session?.access_token} />
           {children}
