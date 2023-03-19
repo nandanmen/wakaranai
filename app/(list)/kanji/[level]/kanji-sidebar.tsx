@@ -4,7 +4,7 @@ import React from "react";
 import type { Kanji } from "@/lib/kanji";
 import { motion } from "framer-motion";
 import Balancer from "react-wrap-balancer";
-import { VariationsResponse } from "@/lib/words-v2";
+import { VariationsResponse, WordV2Response } from "@/lib/words-v2";
 import useSWR from "swr";
 import { IconOnly } from "@/components/quiz/icon";
 
@@ -16,11 +16,11 @@ export const fetchWords = (url: string): Promise<VariationsResponse[]> => {
 
 type KanjiSidebarProps = {
   kanji: Kanji;
-  onClose: () => void;
+  onWordSelect: (word: WordV2Response) => void;
 };
 
 export const KanjiSidebar = React.forwardRef<HTMLDivElement, KanjiSidebarProps>(
-  function KanjiSidebar({ kanji, onClose }, ref) {
+  function KanjiSidebar({ kanji, onWordSelect }, ref) {
     const { data: words } = useSWR(
       `/api/words?kanji=${kanji.literal}`,
       fetchWords
@@ -29,17 +29,6 @@ export const KanjiSidebar = React.forwardRef<HTMLDivElement, KanjiSidebarProps>(
       <motion.div
         ref={ref}
         key={kanji.literal}
-        animate={{
-          y: 0,
-          opacity: 1,
-        }}
-        initial={{ y: 16, opacity: 0 }}
-        exit={{
-          scale: 0.9,
-          opacity: 0,
-          transition: { type: "tween", duration: 0.1 },
-        }}
-        transition={{ y: { type: "spring", damping: 20 } }}
         style={{ originX: "100%", originY: 0 }}
         className="h-full p-12 flex flex-col"
       >
@@ -91,6 +80,14 @@ export const KanjiSidebar = React.forwardRef<HTMLDivElement, KanjiSidebarProps>(
                     .slice(0, 2)
                     .join(", ")}
                 </p>
+                <button
+                  className="ml-2"
+                  onClick={() =>
+                    onWordSelect(word as unknown as WordV2Response)
+                  }
+                >
+                  <ArrowRight />
+                </button>
               </li>
             );
           })}
@@ -99,3 +96,24 @@ export const KanjiSidebar = React.forwardRef<HTMLDivElement, KanjiSidebarProps>(
     );
   }
 );
+
+const ArrowRight = () => {
+  return (
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        d="M13.75 6.75L19.25 12L13.75 17.25"
+      ></path>
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        d="M19 12H4.75"
+      ></path>
+    </svg>
+  );
+};

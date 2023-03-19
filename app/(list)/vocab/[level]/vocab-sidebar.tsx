@@ -12,10 +12,10 @@ const SKIP_TAGS = ["obs", "ok", "oK", "col"];
 
 export const VocabSidebar = ({
   word,
-  onClose,
+  onKanjiClick,
 }: {
   word: WordV2Response;
-  onClose: () => void;
+  onKanjiClick: (kanji: Kanji) => void;
 }) => {
   const [sense] = word.senses;
   const { data: kanji } = useSWR<Kanji[]>(
@@ -27,12 +27,6 @@ export const VocabSidebar = ({
   return (
     <motion.div
       key={word.literal}
-      animate={{
-        y: 0,
-        opacity: 1,
-      }}
-      initial={{ y: 16, opacity: 0 }}
-      transition={{ type: "spring", damping: 20 }}
       className="h-full p-12 flex flex-col space-y-10 overflow-y-auto"
     >
       <div className="p-8 bg-gray2 border rounded-lg border-gray5 shadow-lg flex items-center justify-center font-bold leading-none text-[5rem]">
@@ -72,7 +66,7 @@ export const VocabSidebar = ({
                 <p className="text-sm ml-auto pl-4 text-right">
                   {char.meanings.slice(0, 2).join(", ")}
                 </p>
-                <button className="ml-4">
+                <button className="ml-2" onClick={() => onKanjiClick(char)}>
                   <ArrowRight />
                 </button>
               </li>
@@ -111,15 +105,21 @@ const PhraseText = ({
   parts: WordPart[];
   showReading?: boolean;
 }) => {
+  const literal = parts.map((part) => part.literal).join("");
   return (
     <div className="flex items-end">
-      {parts.map((part) => {
+      {parts.map((part, index) => {
         return (
           <div key={part.literal} className="relative">
             <div className="text-3xl w-full flex justify-center whitespace-nowrap mb-2">
               {part.reading}
             </div>
-            <h1 className="leading-none">{part.literal}</h1>
+            <motion.h1
+              className="leading-none"
+              layoutId={literal + part.literal + index}
+            >
+              {part.literal}
+            </motion.h1>
           </div>
         );
       })}

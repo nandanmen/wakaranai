@@ -1,13 +1,17 @@
 "use client";
 
 import React from "react";
-import { useCycle } from "framer-motion";
+import { AnimatePresence, useCycle } from "framer-motion";
 import { WordV2Response } from "@/lib/words-v2";
 import { VocabSidebar } from "./vocab-sidebar";
 import useSWR, { preload } from "swr";
+import { motion } from "framer-motion";
 import { DotBackground } from "../../dot-background";
 import { useSupabase } from "@/app/supabase";
 import { ProgressButton } from "../../progress-button";
+import { KanjiSidebar } from "../../kanji/[level]/kanji-sidebar";
+import { Kanji } from "@/lib/kanji";
+import cn from "classnames";
 
 export function VocabListPage({ words }: { words: WordV2Response[] }) {
   const [sortAscending, cycle] = useCycle(null, true, false);
@@ -80,14 +84,102 @@ export function VocabListPage({ words }: { words: WordV2Response[] }) {
           </button>
         </div>
       </main>
-      <aside className="sticky top-0 h-screen flex flex-col border-l border-gray4 w-[500px]">
-        {activeWord && (
-          <VocabSidebar word={activeWord} onClose={() => setActiveWord(null)} />
-        )}
-      </aside>
+      {activeWord && <SidebarStack initialWord={activeWord} />}
     </>
   );
 }
+
+const SidebarStack = ({ initialWord }: { initialWord: WordV2Response }) => {
+  const [stack, setStack] = React.useState<
+    Array<
+      { type: "word"; word: WordV2Response } | { type: "kanji"; kanji: Kanji }
+    >
+  >([{ type: "word", word: initialWord }]);
+
+  React.useEffect(() => {
+    setStack([{ type: "word", word: initialWord }]);
+  }, [initialWord]);
+
+  const top = stack.at(-1);
+  return (
+    <aside className="sticky top-0 h-screen">
+      <AnimatePresence>
+        {stack.length > 1 && (
+          <motion.div
+            className="w-[50px] h-screen absolute right-[450px] border-l border-gray4 bg-gray1 text-2xl font-bold divide divide-y divide-gray4 divide-dashed"
+            animate={{ x: 0 }}
+            initial={{ x: "100%" }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", bounce: 0 }}
+          >
+            {stack.map((item, index) => {
+              const literal =
+                item.type === "word" ? item.word.literal : item.kanji.literal;
+              return (
+                <motion.button
+                  key={index}
+                  className={cn(
+                    "w-full py-3",
+                    index === stack.length - 1
+                      ? "bg-gray2"
+                      : "hover:bg-gray2 text-gray9"
+                  )}
+                  animate={{ y: 0, opacity: 1 }}
+                  initial={{ y: -8, opacity: 0.6 }}
+                >
+                  {literal.split("").map((char, index) => {
+                    return (
+                      <motion.span
+                        className="block"
+                        layoutId={literal + char + index}
+                        key={char + index}
+                      >
+                        {char}
+                      </motion.span>
+                    );
+                  })}
+                </motion.button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className="border-l relative border-gray4 bg-gray1 shadow-lg h-full w-[450px]">
+        {top && top.type === "word" && (
+          <VocabSidebar
+            word={top.word}
+            onKanjiClick={(kanji) => {
+              const lastOccurrence = stack.findIndex(
+                (s) => s.type === "kanji" && s.kanji.literal === kanji.literal
+              );
+              if (lastOccurrence >= 0) {
+                setStack(stack.slice(0, lastOccurrence + 1));
+                return;
+              }
+              setStack([...stack, { type: "kanji", kanji }]);
+            }}
+          />
+        )}
+        {top && top.type === "kanji" && (
+          <KanjiSidebar
+            kanji={top.kanji}
+            onWordSelect={(word) => {
+              const lastOccurrence = stack.findIndex(
+                (s) => s.type === "word" && s.word.literal === word.literal
+              );
+              console.log(lastOccurrence);
+              if (lastOccurrence >= 0) {
+                setStack(stack.slice(0, lastOccurrence + 1));
+                return;
+              }
+              setStack([...stack, { type: "word", word }]);
+            }}
+          />
+        )}
+      </div>
+    </aside>
+  );
+};
 
 const SwitchIcon = () => {
   return (
