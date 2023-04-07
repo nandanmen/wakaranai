@@ -1,8 +1,8 @@
-import Link from "next/link";
 import React from "react";
-import { LEVELS, TABS } from "@/lib/constants";
+import { LEVELS } from "@/lib/constants";
 import { LevelLink } from "./level-link";
 import { Title } from "./title";
+import { Tabs } from "./tabs";
 
 export function generateStaticParams() {
   return LEVELS.map((level) => {
@@ -11,10 +11,8 @@ export function generateStaticParams() {
 }
 
 export default function LevelLayout({
-  params,
   children,
 }: {
-  params: { level: string };
   children: React.ReactNode;
 }) {
   return (
@@ -22,21 +20,15 @@ export default function LevelLayout({
       <Background />
       <div className="grid grid-cols-[250px_1fr] grid-rows-[min-content_1fr] p-16 min-h-screen gap-12">
         <Title />
-        <ul className="flex bg-gray1 p-1 border border-gray3 rounded-full relative w-fit h-fit">
-          {TABS.map((tab) => {
-            return (
-              <li key={tab}>
-                <Link
-                  href={`/${params.level}/${tab.toLowerCase()}`}
-                  className="px-3 py-1 block rounded-full hover:bg-gray4"
-                >
-                  {tab}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-        <aside className="space-y-4 sticky top-20">
+        <div className="sticky flex justify-between top-4 z-10">
+          <Tabs />
+          <div>
+            <button className="block h-full bg-gray12 w-full rounded-md text-gray1 font-semibold px-4">
+              Start Quiz
+            </button>
+          </div>
+        </div>
+        <aside className="space-y-4 sticky top-16 h-fit">
           <div className="bg-gray1 border rounded-lg border-gray3 w-[250px] p-4">
             <ul className="font-mono">
               {LEVELS.map((level) => {
