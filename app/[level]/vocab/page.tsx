@@ -1,18 +1,12 @@
 import { notFound } from "next/navigation";
 import { Word, WordProficiency } from "@/lib/types";
 import { VocabList } from "./vocab-list";
-
-const baseUrl = process.env.SUPABASE_URL as string;
-const apiKey = process.env.SUPABASE_API_KEY as string;
+import { request } from "@/lib/db";
 
 const userId = "707be283-f753-49ed-8171-7106906d21bc";
 
 async function getWords(level = 5) {
-  const response = await fetch(`${baseUrl}/words?select=*&jlpt=eq.${level}`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      apiKey: apiKey,
-    },
+  const response = await request(`/words?select=*&jlpt=eq.${level}`, {
     cache: "force-cache",
   });
   if (response.ok) {
@@ -22,14 +16,8 @@ async function getWords(level = 5) {
 }
 
 async function getProficiency(level = 5) {
-  const response = await fetch(
-    `${baseUrl}/level_proficiency?select=*&user_id=eq.${userId}&jlpt=eq.${level}`,
-    {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        apiKey: apiKey,
-      },
-    }
+  const response = await request(
+    `/level_proficiency?select=*&user_id=eq.${userId}&jlpt=eq.${level}`
   );
   if (!response.ok) {
     console.error(response);
