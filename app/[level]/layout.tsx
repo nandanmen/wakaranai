@@ -2,6 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { LEVELS, TABS } from "@/lib/constants";
 import { LevelLink } from "./level-link";
+import { Title } from "./title";
 
 export function generateStaticParams() {
   return LEVELS.map((level) => {
@@ -19,10 +20,8 @@ export default function LevelLayout({
   return (
     <div>
       <Background />
-      <div className="grid grid-cols-[250px_1fr] grid-rows-[min-content_1fr] p-20 min-h-screen gap-12">
-        <h2 className="relative text-xl flex items-center font-title">
-          わからない
-        </h2>
+      <div className="grid grid-cols-[250px_1fr] grid-rows-[min-content_1fr] p-16 min-h-screen gap-12">
+        <Title />
         <ul className="flex bg-gray1 p-1 border border-gray3 rounded-full relative w-fit h-fit">
           {TABS.map((tab) => {
             return (
@@ -45,12 +44,12 @@ export default function LevelLayout({
               })}
             </ul>
           </div>
-          <div className="space-y-2 bg-gray1 border rounded-lg border-gray3 p-6">
-            <button className="block bg-gray2 w-full rounded-md py-1 border border-gray5">
-              Login
-            </button>
+          <div className="space-y-2">
             <button className="block bg-gray2 w-full rounded-md py-1 border border-gray5">
               Login with GitHub
+            </button>
+            <button className="block bg-gray2 w-full rounded-md py-1 border border-gray5">
+              Login
             </button>
           </div>
         </aside>
