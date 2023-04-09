@@ -105,13 +105,12 @@ export function Quiz({
                         active ? `h-[400px] shrink-0 flex items-center` : `py-4`
                       }
                     >
-                      <motion.span
-                        className="block"
-                        layout
-                        transition={{ type: "spring", bounce: 0 }}
-                      >
-                        {word.literal}
-                      </motion.span>
+                      <motion.div className="flex items-end">
+                        <TextWithReading
+                          word={word}
+                          showReading={active && showAnswer}
+                        />
+                      </motion.div>
                     </motion.li>
                   );
                 })}
@@ -126,6 +125,46 @@ export function Quiz({
     </div>
   );
 }
+
+const TextWithReading = ({
+  word,
+  showReading = false,
+}: {
+  word: Word;
+  showReading?: boolean;
+}) => {
+  const [sense] = word.senses;
+  if (sense.parts.length === 0) {
+    return (
+      <motion.span layout transition={{ type: "spring", bounce: 0 }}>
+        {word.literal}
+      </motion.span>
+    );
+  }
+  return (
+    <>
+      {sense.parts.map((part) => {
+        return (
+          <span key={part.literal} className="flex flex-col items-center gap-3">
+            {showReading && (
+              <motion.span
+                animate={{ y: 0, opacity: 1 }}
+                initial={{ y: "1em", opacity: 0 }}
+                transition={{ type: "spring", bounce: 0 }}
+                className="text-2xl"
+              >
+                {part.reading}
+              </motion.span>
+            )}
+            <motion.span layout transition={{ type: "spring", bounce: 0 }}>
+              {part.literal}
+            </motion.span>
+          </span>
+        );
+      })}
+    </>
+  );
+};
 
 const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
   function WordExplanation({ word: givenWord }, ref) {
