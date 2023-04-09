@@ -34,3 +34,9 @@ export type WordProficiency = {
   user_id: string;
   jlpt: number;
 };
+
+export type Sentence = {
+  sentence_id: number;
+  text: string;
+  meaning: string;
+};

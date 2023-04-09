@@ -5,3 +5,11 @@
 html {
   color-scheme: dark;
 }
+
+.quiz-mask {
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 1) 15%
+  );
+}
