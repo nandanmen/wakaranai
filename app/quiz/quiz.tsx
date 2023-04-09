@@ -2,7 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  LayoutGroup,
+  AnimatePresence,
+  useIsPresent,
+} from "framer-motion";
 import type { Sentence, Word } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { toKana } from "wanakana";
@@ -123,8 +128,9 @@ export function Quiz({
 }
 
 const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
-  ({ word: givenWord }, ref) => {
-    const [word] = useState(givenWord);
+  function WordExplanation({ word: givenWord }, ref) {
+    const isPresent = useIsPresent();
+    const [word, setWord] = useState(givenWord);
     const { data } = useSWR<Sentence[]>(
       `/api/sentences?id=${word.id}`,
       (url) => {
@@ -138,8 +144,15 @@ const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
       ...new Set(sense.meanings.flatMap((meaning) => meaning.texts)),
     ];
 
+    React.useEffect(() => {
+      if (isPresent) {
+        setWord(givenWord);
+      }
+    }, [isPresent]);
+
     return (
       <motion.div
+        key={word.literal}
         ref={ref}
         animate={{ y: "0%" }}
         initial={{ y: "100%" }}
