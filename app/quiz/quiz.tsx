@@ -9,11 +9,11 @@ import {
   useIsPresent,
 } from "framer-motion";
 import type { Sentence, Word } from "@/lib/types";
-import { useRouter } from "next/navigation";
 import { toKana } from "wanakana";
 import useSWR from "swr";
 import { Title } from "../[level]/title";
 import { clsx } from "clsx";
+import { CheckCircle, CloseCircle, ExpandIcon, MinimizeIcon } from "../icons";
 
 type Progress = {
   id: number;
@@ -55,11 +55,9 @@ export function Quiz({
             transition={{ type: "spring", bounce: 0 }}
           />
         </div>
-        <form
-          className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray3"
-          onSubmit={(evt) => {
-            evt.preventDefault();
-            const form = evt.target as HTMLFormElement;
+        <Form
+          word={words[index]}
+          onSubmit={(form) => {
             if (showAnswer) {
               form.reset();
               setIndex(index + 1);
@@ -67,18 +65,7 @@ export function Quiz({
               setShowAnswer(true);
             }
           }}
-        >
-          <ReadingInput />
-          <label className="mt-6" htmlFor="meaning">
-            Meaning
-          </label>
-          <input
-            id="meaning"
-            type="text"
-            className="bg-gray1 border-b border-gray8 py-2 focus:outline-none"
-          />
-          <button type="submit" />
-        </form>
+        />
         <div className="row-start-2 col-start-2 bg-gray1 rounded-tr-xl rounded-br-xl border border-gray3 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
           <LayoutGroup>
             <div className="quiz-mask w-full overflow-hidden">
@@ -189,6 +176,19 @@ const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
       }
     }, [isPresent]);
 
+    React.useEffect(() => {
+      const handleQuestion = (e: KeyboardEvent) => {
+        if (e.key === "?" && isPresent) {
+          e.preventDefault();
+          setExpanded(true);
+        }
+      };
+      window.addEventListener("keydown", handleQuestion);
+      return () => {
+        window.removeEventListener("keydown", handleQuestion);
+      };
+    }, [isPresent]);
+
     return (
       <motion.div
         key={word.literal}
@@ -273,89 +273,71 @@ const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
   }
 );
 
-const MinimizeIcon = () => {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M10.25 18.25V13.75H5.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-      <path
-        d="M13.75 5.75V10.25H18.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-      <path
-        d="M4.75 19.25L10.25 13.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-      <path
-        d="M19.25 4.75L13.75 10.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-    </svg>
-  );
+const IN_PARENS = /\(.*\)/g;
+
+type Answer =
+  | {
+      type: "correct" | "incorrect";
+      value: string;
+    }
+  | {
+      type: "skipped";
+      value: null;
+    };
+
+const getInputAnswer = (
+  input: HTMLInputElement,
+  isCorrect: (value: string) => boolean
+): Answer => {
+  if (input.value === "") {
+    return {
+      type: "skipped",
+      value: null,
+    };
+  }
+  return {
+    type: isCorrect(input.value) ? "correct" : "incorrect",
+    value: input.value,
+  };
 };
 
-const ExpandIcon = () => {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M4.75 14.75V19.25H9.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-      <path
-        d="M19.25 9.25V4.75H14.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-      <path
-        d="M5 19L10.25 13.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-      <path
-        d="M19 5L13.75 10.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-    </svg>
-  );
+const getResult = (
+  form: HTMLFormElement,
+  word: Word
+): { reading: Answer; meaning: Answer } => {
+  const readingInput = form.elements.namedItem("reading") as HTMLInputElement;
+  const meaningInput = form.elements.namedItem("meaning") as HTMLInputElement;
+  const readingAnswer = getInputAnswer(readingInput, (value) => {
+    return word.senses.some((sense) => {
+      return sense.readings.some((reading) => reading === toKana(value));
+    });
+  });
+  const meaningAnswer = getInputAnswer(meaningInput, (value) => {
+    return word.senses.some((sense) => {
+      const meanings = sense.meanings.flatMap((m) => m.texts);
+      return meanings
+        .map((m) => m.replaceAll(IN_PARENS, "").trim())
+        .some((meaning) => meaning.toLowerCase() === value.toLowerCase());
+    });
+  });
+  return {
+    reading: readingAnswer,
+    meaning: meaningAnswer,
+  };
 };
 
-const ReadingInput = () => {
+const Form = ({
+  word,
+  onSubmit,
+}: {
+  word: Word;
+  onSubmit: (form: HTMLFormElement) => void;
+}) => {
+  const readingRef = React.useRef<HTMLInputElement>(null);
+  const [result, setResult] = React.useState<{
+    reading: Answer;
+    meaning: Answer;
+  } | null>(null);
   const [value, setValue] = React.useState("");
 
   const parseValue = (newValue: string) => {
@@ -370,15 +352,67 @@ const ReadingInput = () => {
   };
 
   return (
-    <>
-      <label htmlFor="reading">Reading</label>
-      <input
-        id="reading"
-        type="text"
-        className="bg-gray1 border-b border-gray8 py-2 focus:outline-none"
-        value={value}
-        onChange={(evt) => parseValue(evt.target.value)}
+    <form
+      className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray3"
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        const form = evt.target as HTMLFormElement;
+        if (!result) {
+          setResult(getResult(form, word));
+        } else {
+          form.reset();
+          setValue("");
+          readingRef.current?.focus();
+          setResult(null);
+        }
+        onSubmit(form);
+      }}
+    >
+      <div className="relative flex flex-col">
+        <label htmlFor="reading">Reading</label>
+        <input
+          ref={readingRef}
+          id="reading"
+          type="text"
+          className="bg-gray1 border-b border-gray8 py-2 focus:outline-none"
+          value={value}
+          onChange={(evt) => parseValue(evt.target.value)}
+        />
+        {result?.reading && <AnswerIcon answer={result.reading} />}
+      </div>
+      <div className="relative flex flex-col mt-6">
+        <label htmlFor="meaning">Meaning</label>
+        <input
+          id="meaning"
+          type="text"
+          className="bg-gray1 border-b border-gray8 py-2 focus:outline-none"
+        />
+        {result?.meaning && <AnswerIcon answer={result.meaning} />}
+      </div>
+      <button type="submit" />
+    </form>
+  );
+};
+
+const AnswerIcon = ({ answer }: { answer: Answer }) => {
+  if (answer.type === "correct") {
+    return (
+      <span className="absolute right-0 bottom-2">
+        <CheckCircle
+          animate={{ pathLength: 1 }}
+          initial={{ pathLength: 0 }}
+          transition={{ type: "spring", bounce: 0 }}
+        />
+      </span>
+    );
+  }
+  return (
+    <span className="absolute right-0 bottom-2">
+      <CloseCircle
+        animate={{ pathLength: 1 }}
+        initial={{ pathLength: 0 }}
+        transition={{ type: "spring", bounce: 0 }}
       />
-    </>
+    </span>
   );
 };
