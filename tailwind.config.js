@@ -1,4 +1,4 @@
-const { grayDark, blueDark } = require("@radix-ui/colors");
+const { grayDark, blueDark, gray, blue } = require("@radix-ui/colors");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -15,8 +15,8 @@ module.exports = {
         mono: ["var(--font-mono)", "monospace"],
       },
       colors: {
-        ...grayDark,
-        ...blueDark,
+        ...gray,
+        ...blue,
       },
     },
   },

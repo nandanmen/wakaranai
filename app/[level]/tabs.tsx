@@ -9,7 +9,7 @@ export function Tabs() {
   const pathname = usePathname();
   const activeTab = pathname?.split("/").at(-1);
   return (
-    <ul className="flex bg-gray1 p-1 border border-gray3 rounded-full w-fit">
+    <ul className="flex bg-gray1 p-1 border border-gray6 rounded-full w-fit">
       {TABS.map((tab) => {
         return (
           <li key={tab}>

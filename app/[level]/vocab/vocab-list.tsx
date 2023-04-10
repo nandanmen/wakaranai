@@ -18,7 +18,7 @@ export function VocabList({
           const _proficiency = proficiency[word.id]?.proficiency / 3 ?? 0;
           return (
             <li
-              className="p-2 bg-gray1 border-gray4 border rounded-md relative"
+              className="p-2 bg-gray1 border-gray6 border rounded-md relative shadow-sm overflow-hidden"
               key={word.id}
             >
               <motion.span

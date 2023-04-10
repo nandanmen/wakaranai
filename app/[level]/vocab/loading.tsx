@@ -8,7 +8,7 @@ export default function VocabLoading() {
       {range(0, 12).map((index) => {
         return (
           <li
-            className="h-[42px] bg-gray3 border-gray3 border rounded-md"
+            className="h-[42px] bg-gray3 border-gray6 border rounded-md"
             key={index}
           />
         );

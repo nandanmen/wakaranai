@@ -46,7 +46,7 @@ export function Quiz({
         <Link href={`/n${level}/${type}`}>Quit Quiz</Link>
       </header>
       <main className="relative grid grid-cols-[2fr_3fr] grid-rows-[min-content_1fr] gap-y-4 h-full">
-        <div className="relative bg-gray2 rounded-full overflow-hidden h-3 col-span-2">
+        <div className="relative bg-gray6 rounded-full overflow-hidden h-3 col-span-2">
           <motion.div
             className="absolute inset-0 bg-gray12"
             style={{ originX: "left" }}
@@ -66,7 +66,7 @@ export function Quiz({
             }
           }}
         />
-        <div className="row-start-2 col-start-2 bg-gray1 rounded-tr-xl rounded-br-xl border border-gray3 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
+        <div className="row-start-2 col-start-2 bg-gray2 rounded-tr-xl rounded-br-xl border border-gray6 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
           <LayoutGroup>
             <div className="quiz-mask w-full overflow-hidden">
               <motion.ul
@@ -209,7 +209,7 @@ const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
           initial={{ borderRadius: 24 }}
           transition={{ type: "spring", bounce: 0 }}
           className={clsx(
-            "p-1 bg-gray2 border-gray4 relative",
+            "p-1 bg-gray1 border-gray6 relative shadow-sm",
             expanded && "h-full p-4"
           )}
         >
@@ -353,7 +353,7 @@ const Form = ({
 
   return (
     <form
-      className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray3"
+      className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray6"
       onSubmit={(evt) => {
         evt.preventDefault();
         const form = evt.target as HTMLFormElement;
