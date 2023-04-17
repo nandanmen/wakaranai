@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  color-scheme: dark;
+}
+
 .quiz-mask {
   mask-image: linear-gradient(
     to bottom,
