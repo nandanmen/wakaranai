@@ -9,7 +9,7 @@ import {
   useIsPresent,
 } from "framer-motion";
 import type { Sentence, Word } from "@/lib/types";
-import { toKana } from "wanakana";
+import { isKanji, toKana } from "wanakana";
 import useSWR from "swr";
 import { Title } from "../[level]/title";
 import { clsx } from "clsx";
@@ -40,15 +40,15 @@ export function Quiz({
   }, [index]);
 
   return (
-    <div className="h-screen overflow-hidden p-32">
+    <div className="h-screen overflow-hidden flex items-center justify-center">
       <header className="fixed top-0 left-0 p-8 w-full flex justify-between">
         <Title />
         <Link href={`/n${level}/${type}`}>Quit Quiz</Link>
       </header>
-      <main className="relative grid grid-cols-[2fr_3fr] grid-rows-[min-content_1fr] gap-y-4 h-full">
+      <main className="relative grid grid-cols-[2fr_3fr] grid-rows-[min-content_1fr] gap-y-4 max-h-[800px] max-w-[1200px] w-full">
         <div className="relative bg-gray6 rounded-full overflow-hidden h-3 col-span-2">
           <motion.div
-            className="absolute inset-0 bg-gray12"
+            className="absolute inset-0 bg-gray22"
             style={{ originX: "left" }}
             animate={{ scaleX: index / words.length }}
             initial={{ scaleX: 0 }}
@@ -209,7 +209,7 @@ const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
           initial={{ borderRadius: 24 }}
           transition={{ type: "spring", bounce: 0 }}
           className={clsx(
-            "p-1 bg-gray1 border-gray6 relative shadow-md",
+            "p-1 bg-gray3 border-gray6 relative shadow-md",
             expanded && "h-full p-4"
           )}
         >
@@ -301,6 +301,11 @@ const getInputAnswer = (
   };
 };
 
+const hasReading = (word: Word): boolean => {
+  if (word.literal.length === 1 && isKanji(word.literal)) return true;
+  return word.senses.some((sense) => sense.parts.length > 0);
+};
+
 const getResult = (
   form: HTMLFormElement,
   word: Word
@@ -321,7 +326,12 @@ const getResult = (
     });
   });
   return {
-    reading: readingAnswer,
+    reading: hasReading(word)
+      ? readingAnswer
+      : {
+          type: "skipped",
+          value: null,
+        },
     meaning: meaningAnswer,
   };
 };
@@ -333,7 +343,9 @@ const Form = ({
   word: Word;
   onSubmit: (form: HTMLFormElement) => void;
 }) => {
+  const formRef = React.useRef<HTMLFormElement>(null);
   const readingRef = React.useRef<HTMLInputElement>(null);
+  const meaningRef = React.useRef<HTMLInputElement>(null);
   const [result, setResult] = React.useState<{
     reading: Answer;
     meaning: Answer;
@@ -351,41 +363,55 @@ const Form = ({
     setValue(toKana(newValue));
   };
 
+  React.useEffect(() => {
+    formRef.current?.reset();
+    setValue("");
+    setResult(null);
+    if (hasReading(word)) {
+      readingRef.current?.focus();
+    } else {
+      meaningRef.current?.focus();
+    }
+  }, [word]);
+
   return (
     <form
-      className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray6"
+      ref={formRef}
+      className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray2 border border-gray6 text-xl"
       onSubmit={(evt) => {
         evt.preventDefault();
         const form = evt.target as HTMLFormElement;
         if (!result) {
           setResult(getResult(form, word));
-        } else {
-          form.reset();
-          setValue("");
-          readingRef.current?.focus();
-          setResult(null);
         }
         onSubmit(form);
       }}
     >
-      <div className="relative flex flex-col">
+      <div
+        className={clsx(
+          "relative flex flex-col",
+          !hasReading(word) && "opacity-30"
+        )}
+      >
         <label htmlFor="reading">Reading</label>
         <input
           ref={readingRef}
           id="reading"
           type="text"
-          className="bg-gray1 border-b border-gray8 py-2 focus:outline-none"
+          className="bg-gray2 border-b border-gray8 py-4 focus:outline-none"
           value={value}
           onChange={(evt) => parseValue(evt.target.value)}
+          disabled={!hasReading(word)}
         />
         {result?.reading && <AnswerIcon answer={result.reading} />}
       </div>
-      <div className="relative flex flex-col mt-6">
+      <div className="relative flex flex-col mt-12">
         <label htmlFor="meaning">Meaning</label>
         <input
+          ref={meaningRef}
           id="meaning"
           type="text"
-          className="bg-gray1 border-b border-gray8 py-2 focus:outline-none"
+          className="bg-gray2 border-b border-gray8 py-4 focus:outline-none"
         />
         {result?.meaning && <AnswerIcon answer={result.meaning} />}
       </div>
@@ -395,23 +421,26 @@ const Form = ({
 };
 
 const AnswerIcon = ({ answer }: { answer: Answer }) => {
+  if (answer.type === "skipped") return null;
   if (answer.type === "correct") {
     return (
-      <span className="absolute right-0 bottom-2">
+      <span className="absolute right-0 bottom-4">
         <CheckCircle
           animate={{ pathLength: 1 }}
           initial={{ pathLength: 0 }}
           transition={{ type: "spring", bounce: 0 }}
+          size={36}
         />
       </span>
     );
   }
   return (
-    <span className="absolute right-0 bottom-2">
+    <span className="absolute right-0 bottom-4">
       <CloseCircle
         animate={{ pathLength: 1 }}
         initial={{ pathLength: 0 }}
         transition={{ type: "spring", bounce: 0 }}
+        size={36}
       />
     </span>
   );

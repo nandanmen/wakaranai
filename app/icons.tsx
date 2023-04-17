@@ -1,12 +1,15 @@
 import { motion } from "framer-motion";
 
-export const CheckCircle = (
-  props: React.ComponentPropsWithoutRef<typeof motion["path"]>
-) => {
+export const CheckCircle = ({
+  size = 24,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof motion["path"]> & {
+  size?: number;
+}) => {
   return (
     <svg
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -26,13 +29,16 @@ export const CheckCircle = (
   );
 };
 
-export const CloseCircle = (
-  props: React.ComponentPropsWithoutRef<typeof motion["path"]>
-) => {
+export const CloseCircle = ({
+  size = 24,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof motion["path"]> & {
+  size?: number;
+}) => {
   return (
     <svg
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

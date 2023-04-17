@@ -15,8 +15,8 @@ module.exports = {
         mono: ["var(--font-mono)", "monospace"],
       },
       colors: {
-        ...gray,
-        ...blue,
+        ...grayDark,
+        ...blueDark,
       },
     },
   },
