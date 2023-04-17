@@ -45,10 +45,10 @@ export function Quiz({
         <Title />
         <Link href={`/n${level}/${type}`}>Quit Quiz</Link>
       </header>
-      <main className="relative grid grid-cols-[2fr_3fr] grid-rows-[min-content_1fr] gap-y-4 max-h-[800px] max-w-[1200px] w-full">
+      <main className="relative grid grid-cols-[3fr_4fr] grid-rows-[min-content_1fr] gap-y-4 max-h-[800px] max-w-[1200px] w-full">
         <div className="relative bg-gray6 rounded-full overflow-hidden h-3 col-span-2">
           <motion.div
-            className="absolute inset-0 bg-gray22"
+            className="absolute inset-0 bg-gray12"
             style={{ originX: "left" }}
             animate={{ scaleX: index / words.length }}
             initial={{ scaleX: 0 }}
@@ -66,7 +66,7 @@ export function Quiz({
             }
           }}
         />
-        <div className="row-start-2 col-start-2 bg-gray2 rounded-tr-xl rounded-br-xl border border-gray6 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
+        <div className="row-start-2 col-start-2 bg-gray1 rounded-tr-xl rounded-br-xl border border-gray6 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
           <LayoutGroup>
             <div className="quiz-mask w-full overflow-hidden">
               <motion.ul
@@ -377,7 +377,7 @@ const Form = ({
   return (
     <form
       ref={formRef}
-      className="flex flex-col justify-center p-12 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray2 border border-gray6 text-xl"
+      className="flex flex-col justify-center p-8 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray6 text-lg relative"
       onSubmit={(evt) => {
         evt.preventDefault();
         const form = evt.target as HTMLFormElement;
@@ -398,7 +398,7 @@ const Form = ({
           ref={readingRef}
           id="reading"
           type="text"
-          className="bg-gray2 border-b border-gray8 py-4 focus:outline-none"
+          className="bg-gray1 border-b border-gray8 py-4 focus:outline-none"
           value={value}
           onChange={(evt) => parseValue(evt.target.value)}
           disabled={!hasReading(word)}
@@ -411,11 +411,33 @@ const Form = ({
           ref={meaningRef}
           id="meaning"
           type="text"
-          className="bg-gray2 border-b border-gray8 py-4 focus:outline-none"
+          className="bg-gray1 border-b border-gray8 py-4 focus:outline-none"
         />
         {result?.meaning && <AnswerIcon answer={result.meaning} />}
       </div>
-      <button type="submit" />
+      <div className="text-base absolute bottom-8 flex justify-between left-8 right-8">
+        <motion.button
+          layout
+          type="submit"
+          className="bg-gray4 rounded-md px-3 py-2"
+        >
+          <motion.span
+            key={result ? "next" : "submit"}
+            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            {result ? "Next" : "Submit"}
+          </motion.span>
+        </motion.button>
+        <motion.button
+          animate={{ opacity: result ? 0 : 1 }}
+          type="submit"
+          className="text-gray11"
+        >
+          Reveal Answer
+        </motion.button>
+      </div>
     </form>
   );
 };
