@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@planetscale/database": "^1.7.0",
     "@radix-ui/colors": "^0.1.8",
     "@types/node": "18.15.11",
     "@types/react": "18.0.33",
@@ -28,6 +29,12 @@
     "wanakana": "^5.1.0"
   },
   "devDependencies": {
-    "@types/wanakana": "^4.0.3"
+    "@types/wanakana": "^4.0.3",
+    "nodemon": "^2.0.22"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/out/**"
+    ]
   }
 }

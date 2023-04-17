@@ -209,7 +209,7 @@ const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
           initial={{ borderRadius: 24 }}
           transition={{ type: "spring", bounce: 0 }}
           className={clsx(
-            "p-1 bg-gray1 border-gray6 relative shadow-sm",
+            "p-1 bg-gray1 border-gray6 relative shadow-md",
             expanded && "h-full p-4"
           )}
         >
