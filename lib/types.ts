@@ -40,3 +40,14 @@ export type Sentence = {
   text: string;
   meaning: string;
 };
+
+export type Kanji = {
+  id: number;
+  literal: string;
+  jlpt: number;
+  meanings: string[];
+  readings: {
+    on: string[];
+    kun: string[];
+  };
+};
