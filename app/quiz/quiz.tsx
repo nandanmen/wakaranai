@@ -59,6 +59,16 @@ export function Quiz({
           }}
         />
         <div className="row-start-2 col-start-2 bg-gray1 rounded-tr-xl rounded-br-xl border border-gray6 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
+          {index >= startingWords.length && (
+            <motion.div
+              animate={{ x: 0, opacity: 1 }}
+              initial={{ x: 16, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0 }}
+              className="bg-gray4 absolute right-0 top-4 px-3 py-2 rounded-l-md shadow-sm"
+            >
+              Reviewing terms you missed
+            </motion.div>
+          )}
           <LayoutGroup>
             <div className="quiz-mask w-full overflow-hidden">
               <motion.ul
@@ -78,7 +88,7 @@ export function Quiz({
                       animate={{ opacity, scale }}
                       initial={{ opacity, scale }}
                       transition={{ type: "spring", bounce: 0 }}
-                      key={word.id}
+                      key={word.id + i}
                       layout
                       className={
                         active ? `h-[400px] shrink-0 flex items-center` : `py-4`
