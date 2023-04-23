@@ -26,12 +26,13 @@ type Progress = {
 export function Quiz({
   level,
   type,
-  words,
+  words: startingWords,
 }: {
   level: number;
   type: string;
   words: Word[];
 }) {
+  const [words, setWords] = React.useState([...startingWords]);
   const [index, setIndex] = React.useState(0);
   const [showAnswer, setShowAnswer] = React.useState(false);
 
@@ -57,8 +58,14 @@ export function Quiz({
         </div>
         <Form
           word={words[index]}
-          onSubmit={(form) => {
-            if (showAnswer) {
+          onSubmit={(form, result) => {
+            if (showAnswer && result) {
+              if (
+                result.meaning.type !== "correct" ||
+                result.reading.type !== "correct"
+              ) {
+                setWords((words) => [...words, words[index]]);
+              }
               form.reset();
               setIndex(index + 1);
             } else {
@@ -325,12 +332,13 @@ const getResult = (
         .some((meaning) => meaning.toLowerCase() === value.toLowerCase());
     });
   });
+  const defaultReading = word.senses.flatMap((sense) => sense.readings)[0];
   return {
     reading: hasReading(word)
       ? readingAnswer
       : {
-          type: "skipped",
-          value: null,
+          type: "correct",
+          value: defaultReading,
         },
     meaning: meaningAnswer,
   };
@@ -341,7 +349,13 @@ const Form = ({
   onSubmit,
 }: {
   word: Word;
-  onSubmit: (form: HTMLFormElement) => void;
+  onSubmit: (
+    form: HTMLFormElement,
+    result: {
+      reading: Answer;
+      meaning: Answer;
+    } | null
+  ) => void;
 }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
   const readingRef = React.useRef<HTMLInputElement>(null);
@@ -384,7 +398,7 @@ const Form = ({
         if (!result) {
           setResult(getResult(form, word));
         }
-        onSubmit(form);
+        onSubmit(form, result);
       }}
     >
       <div
