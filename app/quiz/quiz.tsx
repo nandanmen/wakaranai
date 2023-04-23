@@ -377,6 +377,19 @@ const Form = ({
     setValue(toKana(newValue));
   };
 
+  const markCorrect = (type: "reading" | "meaning") => {
+    setResult((result) => {
+      if (!result) return null;
+      return {
+        ...result,
+        [type]: {
+          type: "correct",
+          value: result[type].value,
+        },
+      };
+    });
+  };
+
   React.useEffect(() => {
     formRef.current?.reset();
     setValue("");
@@ -418,6 +431,15 @@ const Form = ({
           disabled={!hasReading(word)}
         />
         {result?.reading && <AnswerIcon answer={result.reading} />}
+        {result?.reading.type === "incorrect" && (
+          <button
+            type="button"
+            className="absolute -right-8 translate-x-1/2 z-10 bg-gray1 bottom-4"
+            onClick={() => markCorrect("reading")}
+          >
+            <CheckCircle size={36} />
+          </button>
+        )}
       </div>
       <div className="relative flex flex-col mt-12">
         <label htmlFor="meaning">Meaning</label>
@@ -428,6 +450,15 @@ const Form = ({
           className="bg-gray1 border-b border-gray8 py-4 focus:outline-none"
         />
         {result?.meaning && <AnswerIcon answer={result.meaning} />}
+        {result?.meaning.type === "incorrect" && (
+          <button
+            type="button"
+            className="absolute -right-8 translate-x-1/2 z-10 bg-gray1 bottom-4"
+            onClick={() => markCorrect("meaning")}
+          >
+            <CheckCircle size={36} />
+          </button>
+        )}
       </div>
       <div className="text-base absolute bottom-8 flex justify-between left-8 right-8">
         <motion.button
