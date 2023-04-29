@@ -1,5 +1,3 @@
-const { grayDark, blueDark, gray, blue } = require("@radix-ui/colors");
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -14,11 +12,7 @@ module.exports = {
         sans: ["var(--font-sans)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
-      colors: {
-        ...grayDark,
-        ...blueDark,
-      },
     },
   },
-  plugins: [],
+  plugins: [require("windy-radix-palette")],
 };

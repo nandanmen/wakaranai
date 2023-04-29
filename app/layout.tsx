@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${sans.variable} ${mono.variable} ${title.variable} font-sans bg-gray1 text-gray12`}
+        className={`${sans.variable} ${mono.variable} ${title.variable} font-sans bg-gray-1 text-gray-12`}
       >
         <Background />
         {children}
@@ -60,7 +60,7 @@ function Background() {
           viewBox="0 0 10 10"
           patternUnits="userSpaceOnUse"
         >
-          <circle cx="5" cy="5" r="1" className="fill-gray3" />
+          <circle cx="5" cy="5" r="1" className="fill-gray-3" />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill={`url(#${id})`} />

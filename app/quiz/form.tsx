@@ -129,7 +129,7 @@ export const Form = ({
   return (
     <form
       ref={formRef}
-      className="flex flex-col justify-center p-8 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray1 border border-gray6 text-lg relative"
+      className="flex flex-col justify-center p-8 col-start-1 rounded-tl-xl rounded-bl-xl bg-gray-1 border border-gray-6 text-lg relative"
       onSubmit={(evt) => {
         evt.preventDefault();
         const form = evt.target as HTMLFormElement;
@@ -150,7 +150,7 @@ export const Form = ({
           ref={readingRef}
           id="reading"
           type="text"
-          className="bg-gray1 border-b border-gray8 py-4 focus:outline-none"
+          className="bg-gray-1 border-b border-gray-8 py-4 focus:outline-none"
           value={value}
           onChange={(evt) => parseValue(evt.target.value)}
           disabled={!hasReading(word)}
@@ -159,7 +159,7 @@ export const Form = ({
         {result?.reading.type === "incorrect" && (
           <button
             type="button"
-            className="absolute -right-8 translate-x-1/2 z-10 bg-gray1 bottom-4"
+            className="absolute -right-8 translate-x-1/2 z-10 bg-gray-1 bottom-4"
             onClick={() => markCorrect("reading")}
           >
             <CheckCircle size={36} />
@@ -172,13 +172,13 @@ export const Form = ({
           ref={meaningRef}
           id="meaning"
           type="text"
-          className="bg-gray1 border-b border-gray8 py-4 focus:outline-none"
+          className="bg-gray-1 border-b border-gray-8 py-4 focus:outline-none"
         />
         {result?.meaning && <AnswerIcon answer={result.meaning} />}
         {result?.meaning.type === "incorrect" && (
           <button
             type="button"
-            className="absolute -right-8 translate-x-1/2 z-10 bg-gray1 bottom-4"
+            className="absolute -right-8 translate-x-1/2 z-10 bg-gray-1 bottom-4"
             onClick={() => markCorrect("meaning")}
           >
             <CheckCircle size={36} />
@@ -189,7 +189,7 @@ export const Form = ({
         <motion.button
           layout
           type="submit"
-          className="bg-gray4 rounded-md px-3 py-2"
+          className="bg-gray-4 rounded-md px-3 py-2"
         >
           <motion.span
             key={result ? "next" : "submit"}
@@ -203,7 +203,7 @@ export const Form = ({
         <motion.button
           animate={{ opacity: result ? 0 : 1 }}
           type="submit"
-          className="text-gray11"
+          className="text-gray-11"
         >
           Reveal Answer
         </motion.button>

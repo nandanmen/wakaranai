@@ -18,7 +18,7 @@ export function VocabList({
           const _proficiency = proficiency[word.id]?.proficiency / 3 ?? 0;
           return (
             <li
-              className="p-2 bg-gray1 border-gray6 border rounded-md relative shadow-sm overflow-hidden"
+              className="p-2 bg-gray-1 border-gray-6 border rounded-md relative shadow-sm overflow-hidden"
               key={word.id}
             >
               <motion.span
@@ -26,11 +26,11 @@ export function VocabList({
                 animate={{ scaleX: _proficiency }}
                 initial={{ scaleX: 0 }}
                 transition={{ type: "spring", bounce: 0 }}
-                className="absolute inset-0 bg-gray3"
+                className="absolute inset-0 bg-gray-3"
               />
               <span className="relative">{word.literal}</span>
               {_proficiency === 1 && (
-                <span className="absolute right-2 text-gray10">
+                <span className="absolute right-2 text-gray-10">
                   <CheckCircle />
                 </span>
               )}

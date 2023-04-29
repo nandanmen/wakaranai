@@ -10,8 +10,8 @@ const title = "ゆいとはなの友情物語";
 
 export default function StoriesPage() {
   return (
-    <div className="rounded-md border border-gray6 bg-gray1 flex">
-      <div className="p-16 border-r border-gray6">
+    <div className="rounded-md border border-gray-6 bg-gray-1 flex">
+      <div className="p-16 border-r border-gray-6">
         <article className="w-[60ch] space-y-6 text-lg">
           <h1 className="text-4xl mb-12">{title}</h1>
           {story.split("\n").map((paragraph, i) => (

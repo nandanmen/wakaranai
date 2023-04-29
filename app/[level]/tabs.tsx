@@ -9,14 +9,14 @@ export function Tabs() {
   const pathname = usePathname();
   const activeTab = pathname?.split("/").at(-1);
   return (
-    <ul className="flex bg-gray1 p-1 border border-gray6 rounded-full w-fit">
+    <ul className="flex bg-gray-1 p-1 border border-gray-6 rounded-full w-fit">
       {TABS.map((tab) => {
         return (
           <li key={tab}>
             <Link
               href={`/${params?.level}/${tab.toLowerCase()}`}
-              className={`px-3 py-1 block rounded-full hover:bg-gray4 ${
-                activeTab === tab.toLowerCase() && "bg-gray4"
+              className={`px-3 py-1 block rounded-full hover:bg-gray-4 ${
+                activeTab === tab.toLowerCase() && "bg-gray-4"
               }`}
             >
               {tab}

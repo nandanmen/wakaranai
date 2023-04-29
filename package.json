@@ -30,7 +30,8 @@
   },
   "devDependencies": {
     "@types/wanakana": "^4.0.3",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "windy-radix-palette": "^0.6.1"
   },
   "nodemonConfig": {
     "ignore": [

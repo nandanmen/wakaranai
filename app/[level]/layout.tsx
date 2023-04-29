@@ -25,7 +25,7 @@ export default function LevelLayout({
         </div>
       </div>
       <aside className="space-y-4 sticky top-16 h-fit">
-        <div className="bg-gray1 border rounded-lg border-gray6 w-[250px] p-4 shadow-sm">
+        <div className="bg-gray-1 border rounded-lg border-gray-6 w-[250px] p-4 shadow-sm">
           <ul className="font-mono">
             {LEVELS.map((level) => {
               return <LevelLink key={level} level={level} />;

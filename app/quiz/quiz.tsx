@@ -32,9 +32,9 @@ export function Quiz({
         <Link href={`/n${level}/${type}`}>Quit Quiz</Link>
       </header>
       <main className="relative grid grid-cols-[3fr_4fr] grid-rows-[min-content_1fr] gap-y-4 max-h-[800px] max-w-[1200px] w-full">
-        <div className="relative bg-gray6 rounded-full overflow-hidden h-3 col-span-2">
+        <div className="relative bg-gray-6 rounded-full overflow-hidden h-3 col-span-2">
           <motion.div
-            className="absolute inset-0 bg-gray12"
+            className="absolute inset-0 bg-gray-12"
             style={{ originX: "left" }}
             animate={{ scaleX: index / words.length }}
             initial={{ scaleX: 0 }}
@@ -58,13 +58,13 @@ export function Quiz({
             }
           }}
         />
-        <div className="row-start-2 col-start-2 bg-gray1 rounded-tr-xl rounded-br-xl border border-gray6 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
+        <div className="row-start-2 col-start-2 bg-gray-1 rounded-tr-xl rounded-br-xl border border-gray-6 border-l-0 h-full flex flex-col justify-center overflow-hidden relative">
           {index >= startingWords.length && (
             <motion.div
               animate={{ x: 0, opacity: 1 }}
               initial={{ x: 16, opacity: 0 }}
               transition={{ type: "spring", bounce: 0 }}
-              className="bg-gray4 absolute right-0 top-4 px-3 py-2 rounded-l-md shadow-sm"
+              className="bg-gray-4 absolute right-0 top-4 px-3 py-2 rounded-l-md shadow-sm"
             >
               Reviewing terms you missed
             </motion.div>

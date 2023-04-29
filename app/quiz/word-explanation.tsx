@@ -65,7 +65,7 @@ export const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
           initial={{ borderRadius: 24 }}
           transition={{ type: "spring", bounce: 0 }}
           className={clsx(
-            "p-1 bg-gray3 border-gray6 relative shadow-md",
+            "p-1 bg-gray-3 border-gray-6 relative shadow-md",
             expanded && "h-full p-4"
           )}
         >
@@ -83,7 +83,7 @@ export const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
               layout
               transition={{ type: "spring", bounce: 0 }}
               className={clsx(
-                "w-8 h-8 rounded-full hover:bg-gray6 flex items-center justify-center",
+                "w-8 h-8 rounded-full hover:bg-gray-6 flex items-center justify-center",
                 expanded && "absolute top-2 right-2"
               )}
               onClick={() => {
@@ -103,7 +103,7 @@ export const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
               animate={{ opacity: 1 }}
               initial={{ opacity: 0 }}
             >
-              <ul className="divide-y divide-gray6 w-full pr-4">
+              <ul className="divide-y divide-gray-6 w-full pr-4">
                 {data?.map((sentence) => {
                   const [before, after] = sentence.text.split(word.literal);
                   return (
@@ -113,7 +113,7 @@ export const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
                         <span className="text-blue10">{word.literal}</span>
                         <span>{after}</span>
                       </p>
-                      <p className="text-gray11">{sentence.meaning}</p>
+                      <p className="text-gray-11">{sentence.meaning}</p>
                     </li>
                   );
                 })}

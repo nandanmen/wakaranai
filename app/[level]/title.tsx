@@ -28,7 +28,7 @@ export function Title() {
                 damping: 20,
                 delay: toggled ? 0 : 0.5,
               }}
-              className="absolute left-0 right-0 h-[3px] bg-gray12 top-1/2"
+              className="absolute left-0 right-0 h-[3px] bg-gray-12 top-1/2"
             />
             <motion.span
               animate={{ opacity: toggled ? 0.3 : 1 }}

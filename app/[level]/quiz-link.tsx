@@ -9,7 +9,7 @@ export function QuizLink() {
   return (
     <Link
       href={`/quiz?level=${level}&type=${type}&limit=20`}
-      className="h-full bg-gray12 w-full rounded-md text-gray1 font-semibold px-4 flex items-center"
+      className="h-full bg-gray-12 w-full rounded-md text-gray-1 font-semibold px-4 flex items-center"
     >
       Start Quiz
     </Link>
