@@ -1,24 +1,16 @@
 import React from "react";
-import useSWR from "swr";
 import { motion, useIsPresent } from "framer-motion";
-import type { Kanji, Sentence, Word } from "@/lib/types";
+import type { Word } from "@/lib/types";
 import { clsx } from "clsx";
 import { ExpandIcon, MinimizeIcon } from "../icons";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { useKanji, useSentences } from "@/lib/swr";
 
 export const WordExplanation = React.forwardRef<HTMLDivElement, { word: Word }>(
   function WordExplanation({ word: givenWord }, ref) {
     const isPresent = useIsPresent();
     const [word, setWord] = React.useState(givenWord);
-    const { data } = useSWR<Sentence[]>(
-      `/api/sentences?id=${word.id}`,
-      fetcher
-    );
-    const { data: kanjiData } = useSWR<Kanji[]>(
-      `/api/kanji/${word.literal}`,
-      fetcher
-    );
+    const { data } = useSentences(word.id);
+    const { data: kanjiData } = useKanji(word.literal);
     const [expanded, setExpanded] = React.useState(false);
 
     const [sense] = word.senses;
